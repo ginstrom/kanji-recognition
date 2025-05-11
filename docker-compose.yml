@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  etl9g-processor:
+  handwriting:
     build: .
     working_dir: /app/src
     volumes:
