@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# download data
+data/ETL9G/
+# generated data
+src/etl9g_data/
+
 # Distribution / packaging
 .Python
 build/

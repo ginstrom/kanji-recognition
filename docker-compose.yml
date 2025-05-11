@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  etl9g-processor:
+    build: .
+    working_dir: /app/src
+    volumes:
+      # Mount the source code for development
+      - ./src:/app/src
+      # Mount the data directory
+      - ./data:/data
+      # Mount the output directory to persist the generated images
+      - ./etl9g_images:/app/etl9g_images
+    command: /bin/bash 
