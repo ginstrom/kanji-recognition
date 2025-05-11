@@ -9,7 +9,7 @@ __pycache__/
 # download data
 data/ETL9G/
 # generated data
-src/etl9g_data/
+src/etl9g_images/
 
 # Distribution / packaging
 .Python
