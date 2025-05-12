@@ -3,7 +3,7 @@
 ## 1. Dataset Acquisition & Preprocessing (ETL9B)
 
 ### Download & Extraction
-Obtain the ETL9B dataset from the AIST ETL Character Database. ETL9B contains ~607,200 handwritten character images (binary 128×127 pixel bitmaps) representing 3,036 classes (JIS level-1 Kanji plus hiragana). Since there is no built-in PyTorch loader, use provided data files and documentation to extract images and labels (e.g., via a custom script or an ETL data reader library).
+Obtain the ETL9G dataset from the AIST ETL Character Database. Since there is no built-in PyTorch loader, use provided data files and documentation to extract images and labels (e.g., via a custom script or an ETL data reader library).
 
 ### Parsing & Formatting
 Parse the ETL9B binary files to load each character sample into a NumPy array or PIL image. Each sample includes an image and a label (character code). Map the character codes to class indices (0–3035). Convert images to grayscale tensors (if not already) and normalize pixel values (e.g. scale 0–255 to 0–1 float). Ensure the handwriting is in the correct orientation and contrast (black strokes on white background).
