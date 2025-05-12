@@ -10,6 +10,7 @@ __pycache__/
 data/ETL9G/
 # generated data
 src/etl9g_images/
+etl9g_images/
 
 # Distribution / packaging
 .Python
