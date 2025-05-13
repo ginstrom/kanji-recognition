@@ -1,7 +1,7 @@
 ## Project Goals
 - [x] Extract modular functions from image processing code
 - [x] Create a Makefile for Docker Compose operations
-- [ ] Improve image processing pipeline
+- [/] Improve image processing pipeline
 - [ ] Implement kanji recognition model
 - [ ] Create a user interface for kanji recognition
 
@@ -35,3 +35,5 @@
 ## Completed Tasks (continued)
 - [2025-05-13] Modified prepare.py to process ETL9G files individually and save to separate pickle files
 - [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file
+- [2025-05-13] Added lmdb to requirements.txt and installed liblmdb-dev in Dockerfile for efficient key-value storage
+- [2025-05-14] Refactored prepare.py to use LMDB instead of pickle files for more efficient storage of processed kanji data

@@ -23,11 +23,10 @@
 4. `process_kanji_dict()` converts images to two-bit black and white
 5. `prepare.py` orchestrates the entire ETL process:
    - Processes one ETL9G file at a time
-   - Stores each file's processed images in a separate pickle file (e.g., `etl9g_data_01.pkl`)
-   - Implements a checkpoint mechanism to resume processing from the last successfully processed file
-   - Loads data from all pickle files for splitting
-   - Splits the data into train, validation, and test sets using `split_dataset()`
-   - Saves the split datasets to separate pickle files in the output/prep directory
+   - Stores processed images in an LMDB database with keys in the format `character_index_source`
+   - Uses a defaultdict-based index to track character occurrences
+   - Stores metadata about the dataset in the LMDB database
+   - Saves the LMDB database to the output/prep directory
 
 ## Project Structure
 
@@ -67,6 +66,8 @@ kanji-recognition/
 - [2025-05-13] Modified parse.py to use the correct output directory path that matches the Docker volume mount
 - [2025-05-13] Modified prepare.py to process ETL9G files individually and save to separate pickle files
 - [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file
+- [2025-05-13] Added lmdb to requirements.txt and installed liblmdb-dev in Dockerfile for efficient key-value storage
+- [2025-05-14] Refactored prepare.py to use LMDB instead of pickle files for storing processed kanji data
 
 ## Development Workflow
 
@@ -79,8 +80,4 @@ kanji-recognition/
    ```
 5. Output files:
    - Processed images are saved to the `output/prep/etl9g_images` directory
-   - Pickle files with processed data are saved to the `output/prep` directory:
-     - `etl9g_data_XX.pkl`: Processed data for each ETL9G file (where XX is the file number)
-     - `etl9g_train.pkl`: Training set
-     - `etl9g_val.pkl`: Validation set
-     - `etl9g_test.pkl`: Test set
+   - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory

@@ -1,28 +1,18 @@
 ## Current Objective
-Modify prepare.py to process ETL9G files individually and implement checkpoint mechanism
+Refactor the prepare.py script to use LMDB instead of pickle files
 
 ## Context
-The prepare.py script is getting killed when processing all ETL9G files at once and storing them in a single pickle file. This is likely due to memory constraints. We need to modify the script to process one file at a time, save each to a separate pickle file, and implement a checkpoint mechanism to resume processing from the last successfully processed file.
+We previously added lmdb to the requirements.txt file and installed liblmdb-dev in the Docker container. Now we're refactoring the prepare.py script to use LMDB for storing processed kanji data instead of pickle files.
 
 ## Implementation Plan
-1. Modify the `prepare_etl9g_dataset` function to:
-   - Process one ETL9G file at a time
-   - Save each file's processed data to a separate pickle file (e.g., `etl9g_data_01.pkl`)
-   - Return a list of all generated pickle files
-
-2. Add a checkpoint mechanism to:
-   - Check if a pickle file for a given ETL9G file already exists
-   - Skip processing if the file exists, otherwise process it
-   - Keep track of the last successfully processed file
-
-3. Update the `split_and_save_datasets` function to:
-   - Accept a list of pickle files instead of a single file
-   - Load data from all pickle files and combine them for splitting
-
-4. Update the `main` function to implement the new workflow
+1. Replace the existing pickle-based storage with LMDB
+2. Create an index dictionary (defaultdict) to track character occurrences
+3. Store each character with a unique key: `character_index_source`
+4. Store the black and white image bytes directly in LMDB
+5. Remove the dataset splitting functionality (to be reimplemented later)
+6. Ensure the LMDB database is stored in the output/prep directory
 
 ## Next Steps
-1. Test the modified script by running it in the Docker container
-2. Verify that it can process all ETL9G files without getting killed
-3. Verify that it can resume processing from the last successfully processed file
-4. Verify that the train/validation/test splits are correctly generated
+1. Implement the refactored prepare.py script
+2. Test the script to ensure it correctly processes ETL9G files and stores data in LMDB
+3. Verify that the LMDB database is accessible from the Docker container
