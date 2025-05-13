@@ -11,6 +11,7 @@ help:
 	@echo "  make run CMD    - Run CMD in the Docker container (e.g., make run ls)"
 	@echo "  make shell      - Open a shell in the Docker container"
 	@echo "  make build      - Build the Docker container"
+	@echo "  make clean      - Delete all images from output/prep directory"
 	@echo "  make help       - Display this help message"
 
 # Run a command in the Docker container
@@ -32,6 +33,11 @@ shell:
 .PHONY: build
 build:
 	$(DOCKER_COMPOSE) build
+
+# Clean the output/prep directory
+.PHONY: clean
+clean:
+	$(DOCKER_COMPOSE) run --rm $(SERVICE_NAME) rm -rf /app/output/prep/*
 
 # This allows passing arguments to the run command
 %:
