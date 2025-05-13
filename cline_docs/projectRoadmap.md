@@ -22,6 +22,16 @@
 - [2025-05-12] Created Makefile with commands for Docker Compose operations (run, shell, build, help)
 - [2025-05-12] Implemented `read_records()` generator function to improve modularity of record reading logic
 - [2025-05-12] Modified image processing to pad images to 128x128 dimensions for standardization
+- [2025-05-13] Added 'clean' command to Makefile to delete all images from output/prep directory
+- [2025-05-13] Moved `crop_and_pad()` function from `parse.py` to `clean.py` for better code organization
+- [2025-05-13] Created `prepare.py` to implement the ETL pipeline for preparing the ETL9G dataset for ML training
+
+## Completed Tasks (continued)
+- [2025-05-13] Updated docker-compose.yml to mount the entire output/prep directory for better data persistence
 
 ## In Progress
-- Improving Docker workflow and development experience
+- Implementing kanji recognition model
+
+## Completed Tasks (continued)
+- [2025-05-13] Modified prepare.py to process ETL9G files individually and save to separate pickle files
+- [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file

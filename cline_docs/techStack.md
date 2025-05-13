@@ -12,4 +12,5 @@
   - `make run CMD` - Run a command in the Docker container
   - `make shell` - Open a shell in the Docker container
   - `make build` - Build the Docker container
+  - `make clean` - Delete all images from output/prep directory
   - `make help` - Display help information

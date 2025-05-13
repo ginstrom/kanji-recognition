@@ -1,14 +1,28 @@
 ## Current Objective
-Modify `src/parse_sample.py` to pad images to 128x128 dimensions.
+Modify prepare.py to process ETL9G files individually and implement checkpoint mechanism
 
 ## Context
-This task is part of the "Improve image processing pipeline" goal from projectRoadmap.md. Currently, the images are 127x128 pixels, and we need to standardize them to 128x128 for better compatibility with machine learning models.
+The prepare.py script is getting killed when processing all ETL9G files at once and storing them in a single pickle file. This is likely due to memory constraints. We need to modify the script to process one file at a time, save each to a separate pickle file, and implement a checkpoint mechanism to resume processing from the last successfully processed file.
 
 ## Implementation Plan
-1. Update the image array initialization in `extract_item9g_image()` function to use 128x128 dimensions
-2. Modify the pixel assignment logic to handle the new dimensions correctly
-3. Ensure the `crop_and_pad()` function works with the new dimensions
+1. Modify the `prepare_etl9g_dataset` function to:
+   - Process one ETL9G file at a time
+   - Save each file's processed data to a separate pickle file (e.g., `etl9g_data_01.pkl`)
+   - Return a list of all generated pickle files
+
+2. Add a checkpoint mechanism to:
+   - Check if a pickle file for a given ETL9G file already exists
+   - Skip processing if the file exists, otherwise process it
+   - Keep track of the last successfully processed file
+
+3. Update the `split_and_save_datasets` function to:
+   - Accept a list of pickle files instead of a single file
+   - Load data from all pickle files and combine them for splitting
+
+4. Update the `main` function to implement the new workflow
 
 ## Next Steps
-1. Test the modified code to ensure it correctly processes and saves 128x128 images
-2. Continue with other improvements to the image processing pipeline as outlined in the project roadmap
+1. Test the modified script by running it in the Docker container
+2. Verify that it can process all ETL9G files without getting killed
+3. Verify that it can resume processing from the last successfully processed file
+4. Verify that the train/validation/test splits are correctly generated
