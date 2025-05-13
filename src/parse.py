@@ -6,6 +6,9 @@ from pathlib import Path
 from glob import glob
 from jis_unicode_map import jis_to_unicode
 
+# import the local clean module
+from clean import crop_and_pad, process_kanji_dict
+
 ETL9G_RECORD_SIZE = 8199
 
 def read_records(input_stream, record_size):
@@ -34,34 +37,10 @@ def read_records(input_stream, record_size):
 
 # Save output to a folder for viewing in browser
 # This path should match the volume mount in docker-compose.yml for output
-output_dir_base = '/app/etl9g_images' 
+output_dir_base = '/app/output/prep/etl9g_images' 
 
 def jis2unicode(jis_code):
     return jis_to_unicode.get(jis_code, 'UNK')
-
-def crop_and_pad(img_array):
-    """
-    Crop the central portion of the image and add padding to maintain aspect ratio.
-    """
-    height, width = img_array.shape
-    
-    # Take the central 70% of the image width
-    crop_width = int(width * 0.7)
-    left_margin = (width - crop_width) // 2
-    
-    # Crop the central portion
-    cropped = img_array[:, left_margin:left_margin+crop_width]
-    
-    # Create a new black image with the original dimensions
-    padded = np.zeros((height, width), dtype=np.uint8)
-    
-    # Calculate padding
-    pad_left = (width - crop_width) // 2
-    
-    # Place the cropped image in the center of the padded image
-    padded[:, pad_left:pad_left+crop_width] = cropped
-    
-    return padded
 
 def extract_item9g_image(s):
     """
@@ -134,13 +113,20 @@ def extract_etl9g_images(file_paths, limit=20):
                         print(f"Skipping record {record_idx} due to image data error.")
                         continue
 
+                    item_data = process_kanji_dict(item_data)
+
                     original_img = item_data['original']
                     cropped_img = item_data['cropped']
+                    bw_img = item_data['twoBit']
                     unicode_char = item_data['character']
                     
                     # Save original image for comparison
                     original_path = f"{output_dir}/{record_idx:05}_original.png"
                     original_img.save(original_path)
+
+                    # Save black and white image for comparison
+                    original_path = f"{output_dir}/{record_idx:05}_bw.png"
+                    bw_img.save(original_path)
                     
                     # Save cropped image
                     output_path = f"{output_dir}/{record_idx:05}_{unicode_char}.png"
