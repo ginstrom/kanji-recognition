@@ -42,7 +42,7 @@ output_dir_base = '/app/output/prep/etl9g_images'
 def jis2unicode(jis_code):
     return jis_to_unicode.get(jis_code, 'UNK')
 
-def extract_item9g_image(s):
+def extract_image(s):
     """
     Extracts image data and character from a single ETL9G record.
     Returns a dictionary with 'original' image, 'cropped' image, and 'character'.
@@ -90,7 +90,7 @@ def extract_item9g_image(s):
         'character': unicode_char
     }
 
-def extract_etl9g_images(file_paths, limit=20):
+def extract_images(file_paths, limit=20):
     """
     Generator function that extracts images from ETL9G dataset files and yields each dictionary as it's created.
     No longer saves images to disk.
@@ -112,7 +112,7 @@ def extract_etl9g_images(file_paths, limit=20):
                     break
 
                 try:
-                    item_data = extract_item9g_image(s)
+                    item_data = extract_image(s)
 
                     if item_data is None:
                         print(f"Skipping record {record_idx} due to image data error.")
@@ -145,7 +145,7 @@ def main():
     
     # Example of using the generator
     count = 0
-    for item in extract_etl9g_images(image_files, limit=10):
+    for item in extract_images(image_files, limit=10):
         count += 1
         # Process each item as it's yielded
         # For example, you could print the character:

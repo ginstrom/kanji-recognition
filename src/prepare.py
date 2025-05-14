@@ -12,7 +12,7 @@ from PIL import Image
 from tqdm import tqdm
 
 # Import functions from existing modules
-from parse import extract_etl9g_images
+from parse_etl9g import extract_images
 
 def setup_lmdb(output_dir, map_size=20e9):
     """
@@ -77,8 +77,8 @@ def process_etl9g_files(file_paths, env, index, limit=None):
     """
     processed_count = 0
     
-    # Use the generator function from parse.py to get items one by one
-    for item_data in extract_etl9g_images(file_paths, limit):
+    # Use the generator function from parse_etl9g.py to get items one by one
+    for item_data in extract_images(file_paths, limit):
         # Process each item in its own transaction to avoid MDB_BAD_TXN errors
         with env.begin(write=True) as txn:
             try:
@@ -119,7 +119,8 @@ def save_metadata(env, total_processed, index):
             metadata = {
                 'total_records': total_processed,
                 'unique_characters': len(index),
-                'character_counts': {k: v for k, v in index.items()}
+                'sources': ['etl9g'],
+                'character_counts_etl9g': {k: v for k, v in index.items()}
             }
             json.dump(metadata, f, ensure_ascii=False, indent=2)
             print(f"Metadata saved to {metadata_path} as backup")
