@@ -6,6 +6,7 @@
   - `datasplit.py`: Splits datasets into train, validation, and test sets
   - `prepare.py`: Prepares the ETL9G dataset for ML training (ETL pipeline)
   - `jis_unicode_map.py`: Maps JIS codes to Unicode characters
+  - `lmdb_stats.py`: Reads metadata from the LMDB database and provides statistics
 
 - **Docker Environment**: Configuration for containerized development
   - `Dockerfile`: Defines the container image
@@ -28,6 +29,12 @@
    - Stores metadata about the dataset in the LMDB database
    - Saves the LMDB database to the output/prep directory
 
+6. The processed ETL9G dataset in the LMDB database contains:
+   - 607,200 total records
+   - 3,036 unique kanji characters
+   - 200 images per character (consistent across all characters)
+   - Approximately 11.61 GB of data on disk
+
 ## Project Structure
 
 ```
@@ -43,6 +50,7 @@ kanji-recognition/
 │   ├── clean.py            # Image processing functions
 │   ├── datasplit.py        # Dataset splitting functions
 │   ├── jis_unicode_map.py  # JIS to Unicode mapping
+│   ├── lmdb_stats.py       # LMDB database statistics
 │   ├── parse.py            # ETL9G data extraction
 │   ├── prepare.py          # ETL pipeline for dataset preparation
 │   ├── requirements.txt    # Python dependencies
@@ -68,6 +76,8 @@ kanji-recognition/
 - [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file
 - [2025-05-13] Added lmdb to requirements.txt and installed liblmdb-dev in Dockerfile for efficient key-value storage
 - [2025-05-14] Refactored prepare.py to use LMDB instead of pickle files for storing processed kanji data
+- [2025-05-14] Modified parse.py to no longer write PNG files to disk, improving efficiency by directly passing image data to prepare.py for LMDB storage
+- [2025-05-14] Created `lmdb_stats.py` script to read metadata from the LMDB database and provide comprehensive statistics about the kanji dataset
 
 ## Development Workflow
 
@@ -78,6 +88,16 @@ kanji-recognition/
    ```
    make run python prepare.py
    ```
-5. Output files:
-   - Processed images are saved to the `output/prep/etl9g_images` directory
+5. To view statistics about the processed kanji dataset:
+   ```
+   make run python lmdb_stats.py
+   ```
+   Optional arguments:
+   - `--top-n N`: Display top N most common characters (default: 10)
+   - `--bottom-n N`: Display bottom N least common characters (default: 10)
+   - `--sample-images N`: Display N sample images as ASCII art (default: 0)
+   - `--visualize`: Generate and save visualization of character distribution
+   - `--verbose`: Display more detailed information
+6. Output files:
    - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory
+   - Character distribution visualization (if generated) is saved to `output/prep/char_distribution.png`

@@ -1,18 +1,30 @@
 ## Current Objective
-Refactor the prepare.py script to use LMDB instead of pickle files
+Create a script in the src directory that reads metadata from the LMDB database and provides statistics about the kanji dataset.
 
 ## Context
-We previously added lmdb to the requirements.txt file and installed liblmdb-dev in the Docker container. Now we're refactoring the prepare.py script to use LMDB for storing processed kanji data instead of pickle files.
+The ETL9G dataset has been processed and stored in an LMDB database at `/app/output/prep/kanji.lmdb`. The database contains processed kanji images and metadata. We need a script that can read this database, extract the metadata, and provide useful statistics about the dataset.
 
 ## Implementation Plan
-1. Replace the existing pickle-based storage with LMDB
-2. Create an index dictionary (defaultdict) to track character occurrences
-3. Store each character with a unique key: `character_index_source`
-4. Store the black and white image bytes directly in LMDB
-5. Remove the dataset splitting functionality (to be reimplemented later)
-6. Ensure the LMDB database is stored in the output/prep directory
+1. Create a new Python script `lmdb_stats.py` in the src directory
+2. Implement functionality to open and read from the LMDB database
+3. Extract the metadata stored with the key `__metadata__`
+4. Calculate additional statistics by analyzing the database contents
+5. Display the statistics in a clear, formatted way
+
+## Statistics to Include
+- Basic metadata (from `__metadata__` key):
+  - Total number of records
+  - Number of unique characters
+  - Character counts per character
+- Additional calculated statistics:
+  - Most common characters (top N with counts)
+  - Least common characters (bottom N with counts)
+  - Distribution of character frequencies
+  - Average images per character
+  - Database size on disk
+  - Sample key format and structure
 
 ## Next Steps
-1. Implement the refactored prepare.py script
-2. Test the script to ensure it correctly processes ETL9G files and stores data in LMDB
-3. Verify that the LMDB database is accessible from the Docker container
+1. Create the `lmdb_stats.py` script with the functionality described above
+2. Test the script to ensure it correctly reads and displays statistics from the LMDB database
+3. Document the script's usage in the project documentation

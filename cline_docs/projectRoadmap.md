@@ -1,7 +1,7 @@
 ## Project Goals
 - [x] Extract modular functions from image processing code
 - [x] Create a Makefile for Docker Compose operations
-- [/] Improve image processing pipeline
+- [x] Improve image processing pipeline
 - [ ] Implement kanji recognition model
 - [ ] Create a user interface for kanji recognition
 
@@ -37,3 +37,5 @@
 - [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file
 - [2025-05-13] Added lmdb to requirements.txt and installed liblmdb-dev in Dockerfile for efficient key-value storage
 - [2025-05-14] Refactored prepare.py to use LMDB instead of pickle files for more efficient storage of processed kanji data
+- [2025-05-14] Modified parse.py to no longer write PNG files to disk, improving efficiency by directly passing image data to prepare.py for LMDB storage
+- [2025-05-14] Created lmdb_stats.py script to read metadata from the LMDB database and provide comprehensive statistics about the kanji dataset
