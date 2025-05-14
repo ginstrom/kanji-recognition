@@ -7,6 +7,8 @@ services:
     volumes:
       # Mount the source code for development
       - ./src:/app/src
+      # Mount the tests directory
+      - ./tests:/app/tests
       # Mount the data directory
       - ./data:/data
       # Mount the output directory to persist all generated files
