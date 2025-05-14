@@ -43,3 +43,4 @@
 - [2025-05-14] Renamed parse.py to parse_etl9g.py to better reflect its specific purpose in processing the ETL9G dataset
 - [2025-05-14] Added pytest and related packages to requirements.txt for unit testing
 - [2025-05-14] Implemented comprehensive unit tests for parse_etl9g.py, clean.py, and prepare.py modules
+- [2025-05-14] Added 'test' command to Makefile to simplify running unit tests in the Docker environment

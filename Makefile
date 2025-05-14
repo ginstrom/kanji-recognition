@@ -11,6 +11,7 @@ help:
 	@echo "  make run CMD    - Run CMD in the Docker container (e.g., make run ls)"
 	@echo "  make shell      - Open a shell in the Docker container"
 	@echo "  make build      - Build the Docker container"
+	@echo "  make test       - Run unit tests in the Docker container"
 	@echo "  make clean      - Delete all images from output/prep directory"
 	@echo "  make help       - Display this help message"
 
@@ -33,6 +34,11 @@ shell:
 .PHONY: build
 build:
 	$(DOCKER_COMPOSE) build
+
+# Run unit tests in the Docker container
+.PHONY: test
+test:
+	$(DOCKER_COMPOSE) run --rm $(SERVICE_NAME) /bin/bash -c "cd /app && python -m pytest $(TEST_ARGS)"
 
 # Clean the output/prep directory
 .PHONY: clean

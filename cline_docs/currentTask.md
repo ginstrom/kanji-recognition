@@ -1,10 +1,21 @@
 ## Current Objective
-✅ Implement unit tests using pytest for the kanji recognition project.
+✅ Create a "make test" command that runs unit tests in the Docker Compose environment.
 
 ## Context
-The project previously lacked automated tests. Unit tests have been added to help ensure code quality, prevent regressions, and facilitate future development. Tests were implemented for the core functionality in parse_etl9g.py, clean.py, and prepare.py.
+The project has unit tests implemented using pytest, but there was no dedicated Makefile target for running tests. Previously, tests were run using `make run python -m pytest`. Adding a dedicated "make test" command simplifies the testing process.
 
 ## Implementation Completed
+1. ✅ Added a new target to the Makefile for running tests
+2. ✅ Updated the tests/README.md documentation to include the new command
+3. ✅ Updated the techStack.md to include the new command in the Development Workflow section
+4. ✅ Updated the codebaseSummary.md with the new test command information
+5. ✅ Updated the README.md with the new test command information
+6. ✅ Added the new command to the projectRoadmap.md as a completed task
+
+## Previous Objective (Completed)
+✅ Implement unit tests using pytest for the kanji recognition project.
+
+## Previous Implementation Completed
 1. ✅ Created a tests directory structure
 2. ✅ Implemented test files for each module:
    - tests/test_parse_etl9g.py - Tests for ETL9G parsing functions

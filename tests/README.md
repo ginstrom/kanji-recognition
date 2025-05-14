@@ -14,26 +14,34 @@ This directory contains unit tests for the kanji recognition project using pytes
 Run all tests from the project root directory:
 
 ```bash
+make test
+```
+
+You can pass additional arguments to pytest using the TEST_ARGS variable:
+
+```bash
+# Run tests with verbose output
+make test TEST_ARGS="-v"
+
+# Run tests with coverage report
+make test TEST_ARGS="--cov=src"
+
+# Run specific tests by name
+make test TEST_ARGS="-k test_read_records"
+
+# Run tests in a specific file
+make test TEST_ARGS="tests/test_file.py"
+
+# Combine multiple options
+make test TEST_ARGS="-v --cov=src tests/test_clean.py"
+```
+
+Note: Always use the TEST_ARGS variable to pass arguments to pytest. Do not pass arguments directly to the make test command.
+
+You can also still use the original method:
+
+```bash
 make run python -m pytest
-```
-
-Run tests with verbose output:
-
-```bash
-make run python -m pytest -v
-```
-
-Run tests with coverage report:
-
-```bash
-make run python -m pytest --cov=src
-```
-
-Run specific tests:
-
-```bash
-make run python -m pytest tests/test_parse_etl9g.py
-make run python -m pytest -k "test_read_records"
 ```
 
 ## Test Design

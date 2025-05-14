@@ -107,13 +107,27 @@ kanji-recognition/
    - `--verbose`: Display more detailed information
 6. To run the unit tests:
    ```
-   make run python -m pytest
+   make test
    ```
-   Optional arguments:
-   - `-v`: Verbose output
-   - `--cov=src`: Generate coverage report for the src directory
-   - `-k "test_name"`: Run specific tests matching the given name
-   - `tests/test_file.py`: Run tests in a specific file
+   Optional arguments (passed via TEST_ARGS):
+   ```
+   # Verbose output
+   make test TEST_ARGS="-v"
+   
+   # Generate coverage report
+   make test TEST_ARGS="--cov=src"
+   
+   # Run specific tests by name
+   make test TEST_ARGS="-k test_name"
+   
+   # Run tests in a specific file
+   make test TEST_ARGS="tests/test_file.py"
+   
+   # Combine multiple options
+   make test TEST_ARGS="-v --cov=src tests/test_clean.py"
+   ```
+   
+   Note: Always use the TEST_ARGS variable to pass arguments to pytest. Do not pass arguments directly to the make test command.
 7. Output files:
    - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory
    - Character distribution visualization (if generated) is saved to `output/prep/char_distribution.png`
