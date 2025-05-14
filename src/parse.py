@@ -92,18 +92,23 @@ def extract_item9g_image(s):
 
 def extract_etl9g_images(file_paths, limit=20):
     """
-    Extracts images from ETL9G dataset files and saves them to the output directory.
+    Generator function that extracts images from ETL9G dataset files and yields each dictionary as it's created.
+    No longer saves images to disk.
+    
+    Args:
+        file_paths: List of paths to ETL9G data files
+        limit: Optional limit on the number of records to process per file
+        
+    Yields:
+        dict: Dictionary with 'original', 'cropped', 'twoBit', and 'character' fields
     """
     for num, file_path in enumerate(file_paths):
         print(f"Processing file {num + 1}/{len(file_paths)}: {file_path}")
-        output_dir = os.path.join(output_dir_base, str(num))
-        os.makedirs(output_dir, exist_ok=True)
-        print(f"Output directory: {output_dir}")
         # Read the binary file
         with open(file_path, 'rb') as f:
             record_idx = 0
             for s in read_records(f, ETL9G_RECORD_SIZE):
-                if record_idx >= limit:
+                if limit is not None and record_idx >= limit:
                     break
 
                 try:
@@ -111,71 +116,43 @@ def extract_etl9g_images(file_paths, limit=20):
 
                     if item_data is None:
                         print(f"Skipping record {record_idx} due to image data error.")
+                        record_idx += 1
                         continue
 
                     item_data = process_kanji_dict(item_data)
-
-                    original_img = item_data['original']
-                    cropped_img = item_data['cropped']
-                    bw_img = item_data['twoBit']
-                    unicode_char = item_data['character']
-                    
-                    # Save original image for comparison
-                    original_path = f"{output_dir}/{record_idx:05}_original.png"
-                    original_img.save(original_path)
-
-                    # Save black and white image for comparison
-                    original_path = f"{output_dir}/{record_idx:05}_bw.png"
-                    bw_img.save(original_path)
-                    
-                    # Save cropped image
-                    output_path = f"{output_dir}/{record_idx:05}_{unicode_char}.png"
-                    # print("output_path: ", output_path) # Keep or remove print
-                    cropped_img.save(output_path)
-
+                    yield item_data
                     record_idx += 1
                 except Exception as e:
                     print(f"Error processing record {record_idx}: {e}")
-                    # It might be better to increment record_idx here or handle EOF differently
-                    # to avoid an infinite loop if the last record is problematic.
-                    # For now, continue will skip to the next read attempt.
+                    record_idx += 1
                     continue
 
 def clean_output_dir(base_dir):
-    """Deletes all files within subdirectories of the base output directory."""
-    print("Deleting existing images in output directory...")
-    if not os.path.exists(base_dir):
-        print(f"Base directory {base_dir} does not exist. Skipping deletion.")
-        return
-
-    for entry in os.listdir(base_dir):
-        output_dir = os.path.join(base_dir, entry)
-        if not os.path.isdir(output_dir):
-            continue
-        print(f"Cleaning directory: {output_dir}")
-        for file in os.listdir(output_dir):
-            file_path = os.path.join(output_dir, file)
-            # Skip directories if any exist inside
-            if os.path.isdir(file_path):
-                continue
-            try:
-                os.remove(file_path)
-                # print(f"Deleted file: {file_path}") # Optional: for verbose logging
-            except OSError as e:
-                print(f"Error deleting file {file_path}: {e}")
+    """
+    This function is kept for backward compatibility but no longer needed
+    since we're not writing files to disk anymore.
+    """
+    print("No longer writing images to disk, skipping directory cleaning.")
 
 def main():
     # Example usage (adjust path and limit as needed):
-    # first delete any existing images in the output directory
-    clean_output_dir(output_dir_base)
-    # image_files = glob('/data/ETL9G/ETL9G_*') # Original glob pattern
-    image_files = glob(f'/data/ETL9G/ETL9G_*') # Corrected glob pattern if needed, ensure path exists
+    image_files = glob(f'/data/ETL9G/ETL9G_*')
     if not image_files:
         print("No ETL9G files found. Please check the path '/data/ETL9G/'.")
         return
     print(f"Found {len(image_files)} ETL9G files.")
     print("Extracting images from ETL9G dataset...")
-    extract_etl9g_images(image_files, limit=10)
+    
+    # Example of using the generator
+    count = 0
+    for item in extract_etl9g_images(image_files, limit=10):
+        count += 1
+        # Process each item as it's yielded
+        # For example, you could print the character:
+        print(f"Processed item {count}: character {item['character']}")
+    
+    print(f"Extracted {count} items without writing to disk.")
+    print("To store these items in LMDB, use prepare.py")
 
 if __name__ == "__main__":
     main()

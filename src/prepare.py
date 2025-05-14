@@ -1,3 +1,7 @@
+"""
+# ETL9G Dataset Preparation Script
+This script processes the ETL9G dataset, extracts kanji characters and their corresponding images, and stores them in an LMDB database. It also handles metadata storage and error management during processing.
+"""
 import os
 import json
 import lmdb
@@ -8,16 +12,15 @@ from PIL import Image
 from tqdm import tqdm
 
 # Import functions from existing modules
-from parse import read_records, extract_item9g_image, ETL9G_RECORD_SIZE
-from clean import process_kanji_dict
+from parse import extract_etl9g_images
 
-def setup_lmdb(output_dir, map_size=1e9):
+def setup_lmdb(output_dir, map_size=20e9):
     """
     Set up the LMDB environment and return it along with an empty index.
     
     Args:
         output_dir: Directory to store the LMDB database
-        map_size: Maximum size of the database in bytes (default: 1GB)
+        map_size: Maximum size of the database in bytes (default: 20GB)
         
     Returns:
         tuple: (LMDB environment, character index defaultdict)
@@ -59,50 +62,67 @@ def process_and_store_kanji(kanji_dict, txn, index):
     
     return key
 
-def process_etl9g_file(file_path, txn, index, limit=None):
+def process_etl9g_files(file_paths, env, index, limit=None):
     """
-    Process a single ETL9G file and store the data in LMDB.
+    Process ETL9G files and store the data in LMDB.
     
     Args:
-        file_path: Path to an ETL9G data file
-        txn: LMDB transaction object
+        file_paths: List of paths to ETL9G data files
+        env: LMDB environment 
         index: Character index defaultdict
-        limit: Optional limit on the number of records to process
+        limit: Optional limit on the number of records to process per file
         
     Returns:
         int: Number of records processed
     """
     processed_count = 0
     
-    print(f"Processing file: {file_path}")
-    
-    with open(file_path, 'rb') as f:
-        record_idx = 0
-        for s in read_records(f, ETL9G_RECORD_SIZE):
-            if limit is not None and record_idx >= limit:
-                break
-                
+    # Use the generator function from parse.py to get items one by one
+    for item_data in extract_etl9g_images(file_paths, limit):
+        # Process each item in its own transaction to avoid MDB_BAD_TXN errors
+        with env.begin(write=True) as txn:
             try:
-                # Extract image and character data
-                item_data = extract_item9g_image(s)
-                
-                if item_data is None:
-                    print(f"Skipping record {record_idx} due to image data error.")
-                    continue
-                
-                # Process the kanji dictionary to add the two-bit black and white image
-                item_data = process_kanji_dict(item_data)
-                
-                # Store in LMDB
                 key = process_and_store_kanji(item_data, txn, index)
                 processed_count += 1
                 
-                record_idx += 1
+                # Print progress every 100 items
+                if processed_count % 1_000 == 0:
+                    print(f"Processed {processed_count} items so far")
             except Exception as e:
-                print(f"Error processing record {record_idx}: {e}")
-                continue
+                print(f"Error processing item: {e}")
     
     return processed_count
+
+def save_metadata(env, total_processed, index):
+    """
+    Save metadata about the dataset to the LMDB database.
+    
+    Args:
+        env: LMDB environment
+        total_processed: Total number of records processed
+        index: Character index defaultdict
+    """
+    try:
+        with env.begin(write=True) as txn:
+            metadata = {
+                'total_records': total_processed,
+                'unique_characters': len(index),
+                'character_counts': {k: v for k, v in index.items()}
+            }
+            txn.put(b'__metadata__', json.dumps(metadata).encode())
+            print("Metadata successfully saved to LMDB")
+    except Exception as e:
+        print(f"Error saving metadata: {e}")
+        # Write to a separate file as backup
+        metadata_path = os.path.join(os.path.dirname(env.path()), 'metadata.json')
+        with open(metadata_path, 'w') as f:
+            metadata = {
+                'total_records': total_processed,
+                'unique_characters': len(index),
+                'character_counts': {k: v for k, v in index.items()}
+            }
+            json.dump(metadata, f, ensure_ascii=False, indent=2)
+            print(f"Metadata saved to {metadata_path} as backup")
 
 def prepare_etl9g_dataset(output_dir, limit=None):
     """
@@ -123,25 +143,27 @@ def prepare_etl9g_dataset(output_dir, limit=None):
     
     print(f"Found {len(image_files)} ETL9G files.")
     
-    # Set up LMDB environment
-    env, index = setup_lmdb(output_dir)
+    # Set up LMDB environment with larger map_size to avoid MDB_MAP_FULL errors
+    env, index = setup_lmdb(output_dir, map_size=20e9)  # 20GB map size
+    
+    # Initialize total_processed before the try block to avoid UnboundLocalError
     total_processed = 0
     
-    # Process each ETL9G file
-    with env.begin(write=True) as txn:
-        for file_idx, file_path in enumerate(tqdm(image_files, desc="Processing ETL9G files")):
-            processed = process_etl9g_file(file_path, txn, index, limit)
-            total_processed += processed
-            print(f"Processed {processed} records from {file_path}")
+    try:
+        # Process all ETL9G files using the generator
+        total_processed = process_etl9g_files(image_files, env, index, limit)
+        print(f"Processed {total_processed} records from all files")
+    except KeyboardInterrupt:
+        print("\nProcessing interrupted by user. Saving progress...")
+        save_metadata(env, total_processed, index)
+        return env, total_processed
+    except Exception as e:
+        print(f"Error processing files: {e}")
+        print("Saving progress up to this point...")
+        save_metadata(env, total_processed, index)
     
-    # Store the index in the database for future reference
-    with env.begin(write=True) as txn:
-        metadata = {
-            'total_records': total_processed,
-            'unique_characters': len(index),
-            'character_counts': {k: v for k, v in index.items()}
-        }
-        txn.put(b'__metadata__', json.dumps(metadata).encode())
+    # Final save of metadata
+    save_metadata(env, total_processed, index)
     
     print(f"Total records processed: {total_processed}")
     print(f"Total unique characters: {len(index)}")
