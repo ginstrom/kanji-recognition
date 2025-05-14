@@ -1,12 +1,11 @@
 ## Key Components
 
 - **ETL9G Data Processing**: Scripts for processing the ETL9G handwriting database
-  - `parse.py`: Extracts and processes images from ETL9G data files
+  - `parse_etl9g.py`: Extracts and processes images from ETL9G data files
   - `clean.py`: Provides image processing functions (cropping, padding, black/white conversion)
   - `datasplit.py`: Splits datasets into train, validation, and test sets
   - `prepare.py`: Prepares the ETL9G dataset for ML training (ETL pipeline)
   - `jis_unicode_map.py`: Maps JIS codes to Unicode characters
-  - `lmdb_stats.py`: Reads metadata from the LMDB database and provides statistics
 
 - **Docker Environment**: Configuration for containerized development
   - `Dockerfile`: Defines the container image
@@ -51,10 +50,15 @@ kanji-recognition/
 │   ├── datasplit.py        # Dataset splitting functions
 │   ├── jis_unicode_map.py  # JIS to Unicode mapping
 │   ├── lmdb_stats.py       # LMDB database statistics
-│   ├── parse.py            # ETL9G data extraction
+│   ├── parse_etl9g.py      # ETL9G data extraction
 │   ├── prepare.py          # ETL pipeline for dataset preparation
 │   ├── requirements.txt    # Python dependencies
 │   └── train.py            # Model training (to be implemented)
+├── tests/                  # Unit tests
+│   ├── conftest.py         # Shared pytest fixtures
+│   ├── test_clean.py       # Tests for clean.py
+│   ├── test_parse_etl9g.py # Tests for parse_etl9g.py
+│   └── test_prepare.py     # Tests for prepare.py
 ├── docker-compose.yml      # Docker Compose configuration
 ├── Dockerfile              # Docker image definition
 ├── Makefile                # Build automation
@@ -78,6 +82,9 @@ kanji-recognition/
 - [2025-05-14] Refactored prepare.py to use LMDB instead of pickle files for storing processed kanji data
 - [2025-05-14] Modified parse.py to no longer write PNG files to disk, improving efficiency by directly passing image data to prepare.py for LMDB storage
 - [2025-05-14] Created `lmdb_stats.py` script to read metadata from the LMDB database and provide comprehensive statistics about the kanji dataset
+- [2025-05-14] Renamed `parse.py` to `parse_etl9g.py` to better reflect its specific purpose in processing the ETL9G dataset
+- [2025-05-14] Added pytest and related packages to requirements.txt for unit testing
+- [2025-05-14] Created comprehensive unit tests for parse_etl9g.py, clean.py, and prepare.py modules
 
 ## Development Workflow
 
@@ -98,6 +105,15 @@ kanji-recognition/
    - `--sample-images N`: Display N sample images as ASCII art (default: 0)
    - `--visualize`: Generate and save visualization of character distribution
    - `--verbose`: Display more detailed information
-6. Output files:
+6. To run the unit tests:
+   ```
+   make run python -m pytest
+   ```
+   Optional arguments:
+   - `-v`: Verbose output
+   - `--cov=src`: Generate coverage report for the src directory
+   - `-k "test_name"`: Run specific tests matching the given name
+   - `tests/test_file.py`: Run tests in a specific file
+7. Output files:
    - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory
    - Character distribution visualization (if generated) is saved to `output/prep/char_distribution.png`

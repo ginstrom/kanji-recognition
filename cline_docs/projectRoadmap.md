@@ -2,6 +2,7 @@
 - [x] Extract modular functions from image processing code
 - [x] Create a Makefile for Docker Compose operations
 - [x] Improve image processing pipeline
+- [x] Implement unit tests with pytest
 - [ ] Implement kanji recognition model
 - [ ] Create a user interface for kanji recognition
 
@@ -39,3 +40,6 @@
 - [2025-05-14] Refactored prepare.py to use LMDB instead of pickle files for more efficient storage of processed kanji data
 - [2025-05-14] Modified parse.py to no longer write PNG files to disk, improving efficiency by directly passing image data to prepare.py for LMDB storage
 - [2025-05-14] Created lmdb_stats.py script to read metadata from the LMDB database and provide comprehensive statistics about the kanji dataset
+- [2025-05-14] Renamed parse.py to parse_etl9g.py to better reflect its specific purpose in processing the ETL9G dataset
+- [2025-05-14] Added pytest and related packages to requirements.txt for unit testing
+- [2025-05-14] Implemented comprehensive unit tests for parse_etl9g.py, clean.py, and prepare.py modules
