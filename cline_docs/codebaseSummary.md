@@ -57,6 +57,7 @@ kanji-recognition/
 ├── tests/                  # Unit tests
 │   ├── conftest.py         # Shared pytest fixtures
 │   ├── test_clean.py       # Tests for clean.py
+│   ├── test_datasplit.py   # Tests for datasplit.py
 │   ├── test_parse_etl9g.py # Tests for parse_etl9g.py
 │   └── test_prepare.py     # Tests for prepare.py
 ├── docker-compose.yml      # Docker Compose configuration
@@ -67,6 +68,7 @@ kanji-recognition/
 
 ## Recent Significant Changes
 
+- [2025-05-15] Fixed bug in datasplit.py to handle different character count keys in metadata ('character_counts' vs 'character_counts_etl9g')
 - [2025-05-12] Extracted `extract_item9g_image()` function from `extract_etl9g_images()` for better modularity
 - [2025-05-12] Created Makefile with commands for Docker Compose operations
 - [2025-05-12] Implemented `read_records()` generator function to improve modularity of record reading logic
@@ -85,6 +87,8 @@ kanji-recognition/
 - [2025-05-14] Renamed `parse.py` to `parse_etl9g.py` to better reflect its specific purpose in processing the ETL9G dataset
 - [2025-05-14] Added pytest and related packages to requirements.txt for unit testing
 - [2025-05-14] Created comprehensive unit tests for parse_etl9g.py, clean.py, and prepare.py modules
+- [2025-05-15] Refactored datasplit.py to use LMDB databases for train, validation, and test splits with configurable ratios
+- [2025-05-15] Implemented comprehensive unit tests for datasplit.py module
 
 ## Development Workflow
 
@@ -128,6 +132,25 @@ kanji-recognition/
    ```
    
    Note: Always use the TEST_ARGS variable to pass arguments to pytest. Do not pass arguments directly to the make test command.
-7. Output files:
+7. To split the kanji dataset into train, validation, and test sets:
+   ```
+   make run python datasplit.py
+   ```
+   Optional arguments:
+   - `--source PATH`: Path to source LMDB database (default: /app/output/prep/kanji.lmdb)
+   - `--output-dir DIR`: Directory to store output LMDB databases (default: /app/output/prep)
+   - `--train-ratio RATIO`: Fraction of data to use for training (default: 0.8)
+   - `--val-ratio RATIO`: Fraction of data to use for validation (default: 0.1)
+   - `--random-seed SEED`: Random seed for reproducibility (default: 42)
+   
+   Example with custom ratios:
+   ```
+   make run python datasplit.py --train-ratio 0.7 --val-ratio 0.15
+   ```
+
+8. Output files:
    - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory
+   - Train split is saved to the `output/prep/kanji.train.lmdb` directory
+   - Validation split is saved to the `output/prep/kanji.val.lmdb` directory
+   - Test split is saved to the `output/prep/kanji.test.lmdb` directory
    - Character distribution visualization (if generated) is saved to `output/prep/char_distribution.png`
