@@ -1,10 +1,25 @@
 ## Current Objective
-✅ Fix error in datasplit.py related to character_counts metadata
+✅ Update documentation to reflect changes to datasplit.py
 
 ## Context
-The datasplit.py script was failing with an error: `Error during dataset splitting: 'character_counts'`. The issue was that the script was looking for a 'character_counts' key in the metadata, but the actual metadata had the character counts stored under 'character_counts_etl9g' instead.
+The datasplit.py script was recently fixed to handle different character count keys in metadata ('character_counts' vs 'character_counts_etl9g'). The documentation needed to be updated to reflect these changes and to provide more information about the dataset splitting process.
 
 ## Implementation Completed
+1. ✅ Updated README.md to include information about the datasplit.py script and its functionality:
+   - Added a new "Data Processing Pipeline" section
+   - Included details about the three main steps: parsing, preparation, and dataset splitting
+   - Added information about the optional arguments for datasplit.py
+   - Provided an example of how to use custom split ratios
+2. ✅ Updated docs/data.md to include information about the dataset splitting process:
+   - Added a new "Data Processing Pipeline" section
+   - Included details about each step in the pipeline (parsing, preparation, and dataset splitting)
+   - Added information about the resulting LMDB databases and their locations
+   - Explained the format of the data in the split databases
+
+## Previous Objective (Completed)
+✅ Fix error in datasplit.py related to character_counts metadata
+
+## Previous Implementation Completed
 1. ✅ Identified the issue in the `collect_character_statistics` function where it was trying to access `metadata['character_counts']`
 2. ✅ Modified the function to check for different character count keys:
    - First checks for 'character_counts'
@@ -12,27 +27,6 @@ The datasplit.py script was failing with an error: `Error during dataset splitti
    - Falls back to an empty dict if neither is found
 3. ✅ Tested the fix by running the script, which now completes successfully
 4. ✅ Verified that the script correctly creates train, validation, and test LMDB databases
-
-## Previous Objective (Completed)
-✅ Write unit tests for src/datasplit.py
-
-## Previous Implementation Completed
-1. ✅ Created a new test file `tests/test_datasplit.py`
-2. ✅ Implemented test classes for each major function in datasplit.py:
-   - `TestParseArgs`: Tests for argument parsing and validation
-   - `TestCollectCharacterStatistics`: Tests for character statistics collection
-   - `TestAssignSplits`: Tests for stratified splitting of data
-   - `TestCreateTargetLmdbs`: Tests for creation of target LMDB databases
-   - `TestMain`: Tests for the overall workflow
-3. ✅ Used existing fixtures from conftest.py where applicable
-4. ✅ Created new fixtures specific to datasplit.py testing:
-   - `mock_char_to_keys`: Mock character-to-keys mapping
-   - `mock_split_stats`: Mock split statistics
-   - `mock_metadata`: Mock metadata
-   - `mock_source_env`: Mock source LMDB environment
-5. ✅ Used mocking to isolate components and avoid external dependencies
-6. ✅ Ensured tests cover both normal operation and error handling
-7. ✅ Verified all tests pass successfully
 
 ## Next Steps
 1. Implement the kanji recognition model

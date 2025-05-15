@@ -2,6 +2,37 @@
 
 ML model for recognizing handwritten kanji characters
 
+## Data Processing Pipeline
+
+This project includes a complete data processing pipeline for the ETL9G dataset:
+
+1. **Parsing**: Extract images and metadata from ETL9G binary files
+   ```
+   make run python parse_etl9g.py
+   ```
+
+2. **Preparation**: Process images and store in LMDB database
+   ```
+   make run python prepare.py
+   ```
+
+3. **Dataset Splitting**: Split the dataset into train, validation, and test sets
+   ```
+   make run python datasplit.py
+   ```
+   
+   Optional arguments:
+   - `--source PATH`: Path to source LMDB database (default: /app/output/prep/kanji.lmdb)
+   - `--output-dir DIR`: Directory to store output LMDB databases (default: /app/output/prep)
+   - `--train-ratio RATIO`: Fraction of data to use for training (default: 0.8)
+   - `--val-ratio RATIO`: Fraction of data to use for validation (default: 0.1)
+   - `--random-seed SEED`: Random seed for reproducibility (default: 42)
+   
+   Example with custom ratios:
+   ```
+   make run python datasplit.py --train-ratio 0.7 --val-ratio 0.15
+   ```
+
 ## Development Setup
 
 This project uses Docker and Docker Compose for development to ensure a consistent environment.
