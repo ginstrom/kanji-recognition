@@ -1,16 +1,19 @@
 ## Current Objective
-Implement the kanji recognition model
+Implement a simple kanji recognition model and training pipeline
 
 ## Context
-Now that we have successfully created the PyTorch Dataset class to load data from the LMDB databases, we can proceed with implementing the kanji recognition model. This will involve designing and implementing a deep learning model architecture suitable for recognizing handwritten kanji characters.
+Now that we have successfully created the PyTorch Dataset class to load data from the LMDB databases, we can proceed with implementing the kanji recognition model. We'll start with a simple CNN model and basic training pipeline to establish a working baseline, which we can later enhance with more advanced features.
 
 ## Implementation Plan
-1. Research and select appropriate model architectures for handwritten character recognition
-2. Implement the selected model architecture in PyTorch
-3. Create a training script with appropriate loss functions and optimizers
-4. Implement evaluation metrics for model performance
-5. Add support for model checkpointing and early stopping
-6. Implement visualization utilities for model predictions
+1. Implement a simple CNN model architecture in PyTorch with:
+   - Two convolutional layers with max pooling
+   - One fully connected layer for classification
+2. Create a basic training script with:
+   - Standard cross-entropy loss
+   - Adam optimizer with default parameters
+   - Simple training and validation loops
+3. Implement basic evaluation metrics (accuracy)
+4. Add support for saving the final model
 
 ## Previous Objective (Completed)
 ✅ Create a PyTorch Dataset class in a separate load.py file to load data from the LMDB databases

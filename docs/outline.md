@@ -137,6 +137,90 @@ If the focus seems odd or the model makes systematic mistakes (e.g., confusing a
 
 For example, if the model confuses characters that have an extra stroke, implementing the stroke-presence auxiliary loss (so the model has neurons dedicated to that extra stroke) can help it differentiate those cases. In summary, expect that distinguishing thousands of Kanji – especially those that are visually similar – is non-trivial; a combination of strong convolutional features, stroke-aware learning, robust augmentation, and transfer learning will be needed to meet this challenge.
 
+## 8. Implementation Plan for `src/train.py`
+
+### Module Structure
+```
+src/train.py
+├── Model Architecture (KanjiCNN class with stroke-aware features)
+├── Training Configuration (ArgumentParser with extensive options)
+├── Data Augmentation Pipeline
+├── Training Loop with Mixed Precision
+├── Validation Function with Multiple Metrics
+├── Visualization Utilities
+├── Main Function
+└── Command-line Interface
+```
+
+### Model Architecture Options
+1. **Basic CNN**: Simple convolutional network with a few layers for initial testing
+2. **ResNet-based**: Modified ResNet18/34 architecture adapted for grayscale input and kanji classification
+3. **Multi-head Model**: CNN with auxiliary stroke prediction head to make the model stroke-aware
+
+### Training Features
+1. **Mixed Precision Training**: Using `torch.cuda.amp` for faster training and reduced memory usage
+2. **Learning Rate Scheduling**: ReduceLROnPlateau, CosineAnnealing, or StepLR options
+3. **Early Stopping**: To prevent overfitting and save training time
+4. **Gradient Clipping**: To prevent exploding gradients
+5. **Checkpointing**: Save best model based on validation accuracy
+
+### Data Augmentation Pipeline
+1. **Geometric Augmentations**: Small rotations (±5°), translations, and scaling
+2. **Photometric Augmentations**: Gaussian blur, contrast adjustment
+3. **Stroke-level Augmentations**: Custom StrokeDropout transform to randomly remove strokes
+
+### Evaluation Metrics
+1. **Top-1 Accuracy**: Standard classification accuracy
+2. **Top-5 Accuracy**: For handling similar characters
+3. **Per-class Performance**: To identify problematic character classes
+4. **Confusion Matrix Analysis**: To understand common misclassifications
+
+### Visualization Utilities
+1. **Training Curves**: Loss and accuracy over epochs
+2. **Prediction Visualization**: Sample predictions on validation/test set
+3. **Error Analysis**: Visualization of misclassified samples
+4. **Attention Maps**: Visualization of model focus (for advanced models)
+
+### Future Enhancements
+1. **Transfer Learning**: Pretrain on Chinese character datasets
+2. **Advanced Architectures**: Vision Transformer or hybrid CNN-Transformer models
+3. **Stroke Sequence Modeling**: Add recurrent decoder for stroke prediction
+4. **Synthetic Data Generation**: Generate additional training data using fonts
+5. **Adversarial Training**: Make model robust to style variations
+
+## 9. Simplified Implementation for Initial Development
+
+For a first pass with a working implementation, a simplified approach can be used:
+
+### Basic CNN Model
+```python
+class SimpleKanjiCNN(nn.Module):
+    def __init__(self, num_classes=3036):
+        super(SimpleKanjiCNN, self).__init__()
+        # Two convolutional layers
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
+        # One fully connected layer
+        self.fc = nn.Linear(64 * 32 * 32, num_classes)
+        
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 64 * 32 * 32)
+        x = self.fc(x)
+        return x
+```
+
+### Simple Training Loop
+- Use standard cross-entropy loss
+- Use Adam optimizer with default parameters
+- Train for a small number of epochs (e.g., 5)
+- Validate every few epochs to save time
+- Save only the final model
+
+This simplified implementation provides a foundation that can be built upon incrementally. While the accuracy won't be optimal, it demonstrates the basic workflow and confirms that the data loading and model training pipeline is functioning correctly.
+
 ## References
 
 1. [Datasets for Computer Vision](https://dev.to/hyperkai/datasets-for-computer-vision-1-1p0f)
