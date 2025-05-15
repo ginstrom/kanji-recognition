@@ -7,6 +7,9 @@
   - `prepare.py`: Prepares the ETL9G dataset for ML training (ETL pipeline)
   - `jis_unicode_map.py`: Maps JIS codes to Unicode characters
 
+- **Data Loading and Model Training**: Components for loading data and training models
+  - `load.py`: PyTorch Dataset implementation for loading kanji data from LMDB databases
+
 - **Docker Environment**: Configuration for containerized development
   - `Dockerfile`: Defines the container image
   - `docker-compose.yml`: Configures services and volume mounts
@@ -50,6 +53,7 @@ kanji-recognition/
 │   ├── datasplit.py        # Dataset splitting functions
 │   ├── jis_unicode_map.py  # JIS to Unicode mapping
 │   ├── lmdb_stats.py       # LMDB database statistics
+│   ├── load.py             # PyTorch Dataset for loading LMDB data
 │   ├── parse_etl9g.py      # ETL9G data extraction
 │   ├── prepare.py          # ETL pipeline for dataset preparation
 │   ├── requirements.txt    # Python dependencies
@@ -58,6 +62,7 @@ kanji-recognition/
 │   ├── conftest.py         # Shared pytest fixtures
 │   ├── test_clean.py       # Tests for clean.py
 │   ├── test_datasplit.py   # Tests for datasplit.py
+│   ├── test_load.py        # Tests for load.py
 │   ├── test_parse_etl9g.py # Tests for parse_etl9g.py
 │   └── test_prepare.py     # Tests for prepare.py
 ├── docker-compose.yml      # Docker Compose configuration
@@ -68,6 +73,8 @@ kanji-recognition/
 
 ## Recent Significant Changes
 
+- [2025-05-15] Created load.py module with PyTorch Dataset implementation for loading kanji data from LMDB databases
+- [2025-05-15] Implemented comprehensive unit tests for load.py module
 - [2025-05-15] Fixed bug in datasplit.py to handle different character count keys in metadata ('character_counts' vs 'character_counts_etl9g')
 - [2025-05-12] Extracted `extract_item9g_image()` function from `extract_etl9g_images()` for better modularity
 - [2025-05-12] Created Makefile with commands for Docker Compose operations
@@ -148,7 +155,19 @@ kanji-recognition/
    make run python datasplit.py --train-ratio 0.7 --val-ratio 0.15
    ```
 
-8. Output files:
+8. To load and visualize the kanji dataset for model training:
+   ```
+   make run python load.py --visualize
+   ```
+   Optional arguments:
+   - `--data-dir DIR`: Directory containing the LMDB databases (default: /app/output/prep)
+   - `--batch-size N`: Batch size for DataLoader (default: 32)
+   - `--num-workers N`: Number of worker processes for DataLoader (default: 4)
+   - `--cache-size N`: Number of samples to cache in memory (default: 0)
+   - `--visualize`: Visualize random samples from the datasets
+   - `--num-samples N`: Number of samples to visualize (default: 9)
+
+9. Output files:
    - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory
    - Train split is saved to the `output/prep/kanji.train.lmdb` directory
    - Validation split is saved to the `output/prep/kanji.val.lmdb` directory

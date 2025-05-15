@@ -3,12 +3,15 @@
 - [x] Create a Makefile for Docker Compose operations
 - [x] Improve image processing pipeline
 - [x] Implement unit tests with pytest
+- [x] Create PyTorch Dataset for loading LMDB data
 - [ ] Implement kanji recognition model
 - [ ] Create a user interface for kanji recognition
 
 ## Key Features
 - ETL9G dataset processing for kanji images
 - Image preprocessing (cropping, padding)
+- LMDB-based data storage with train/val/test splits
+- PyTorch Dataset implementation for efficient data loading
 - Docker-based development environment
 - Makefile for simplified operations
 
@@ -47,3 +50,8 @@
 - [2025-05-15] Refactored datasplit.py to use LMDB databases for train, validation, and test splits with configurable ratios
 - [2025-05-15] Implemented comprehensive unit tests for datasplit.py module
 - [2025-05-15] Fixed bug in datasplit.py to handle different character count keys in metadata ('character_counts' vs 'character_counts_etl9g')
+- [2025-05-15] Created load.py module with PyTorch Dataset implementation for loading kanji data from LMDB databases
+- [2025-05-15] Implemented helper functions for creating DataLoaders and applying transformations
+- [2025-05-15] Added performance optimizations for efficient data loading (caching, worker processes, pinned memory)
+- [2025-05-15] Implemented visualization utilities for dataset inspection
+- [2025-05-15] Created comprehensive unit tests for load.py module
