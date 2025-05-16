@@ -30,27 +30,65 @@ def crop_and_pad(img_array):
 
 def convert_to_bw(img_array):
     """
-    Convert a grayscale image to binary using a simple threshold with
-    slight smoothing to reduce jagged edges, then invert.
+    Convert to binary using multiple approaches and select the best one.
     
     Args:
         img_array: Numpy array of the grayscale image
-    
+        
     Returns:
         binary_array: Numpy array of the black and white image
     """
-    # Apply a very slight blur to reduce jagged edges
-    # Using a small sigma value to maintain detail while softening edges
+    # Ensure proper data type and range
+    img_array = img_array.astype(np.uint8)
+    
+    # Apply slight blur for noise reduction
     smoothed = cv2.GaussianBlur(img_array, (3, 3), 0.5)
     
-    # Apply a simple threshold - more sensitive than before
-    # This is a bit more forgiving than the strict > 0 threshold
-    binary = np.where(smoothed > 20, 255, 0).astype(np.uint8)
+    # Method 1: Otsu's thresholding
+    _, binary_otsu = cv2.threshold(smoothed, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     
-    # Invert (flip black and white)
-    binary = 255 - binary
+    # Method 2: Adaptive thresholding
+    binary_adaptive = cv2.adaptiveThreshold(
+        smoothed,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        blockSize=11,
+        C=2
+    )
     
-    return binary
+    # Method 3: Fixed value thresholding (your original approach)
+    binary_fixed = np.where(smoothed > 20, 255, 0).astype(np.uint8)
+    
+    # Choose the method that preserves the most stroke information
+    # Here we select the method that results in an appropriate amount of foreground pixels
+    # This is based on the assumption that kanji characters typically occupy 10-40% of image area
+    
+    def calculate_pixel_ratio(img):
+        """Calculate ratio of foreground (white) pixels"""
+        return np.sum(img == 255) / img.size
+    
+    # Invert all binary images so strokes are white (255)
+    binary_otsu = 255 - binary_otsu
+    binary_adaptive = 255 - binary_adaptive
+    binary_fixed = 255 - binary_fixed
+    
+    # Calculate white pixel ratios
+    ratio_otsu = calculate_pixel_ratio(binary_otsu)
+    ratio_adaptive = calculate_pixel_ratio(binary_adaptive)
+    ratio_fixed = calculate_pixel_ratio(binary_fixed)
+    
+    # Choose method based on reasonable pixel density for a kanji character
+    # These thresholds can be adjusted based on your specific dataset
+    if 0.1 <= ratio_otsu <= 0.4:
+        return binary_otsu
+    elif 0.1 <= ratio_adaptive <= 0.4:
+        return binary_adaptive
+    else:
+        # Apply morphological operations to improve the fixed threshold result
+        kernel = np.ones((2, 2), np.uint8)
+        binary_fixed = cv2.morphologyEx(binary_fixed, cv2.MORPH_CLOSE, kernel)
+        return binary_fixed
 
 def process_kanji_dict(kanji_dict):
     """
