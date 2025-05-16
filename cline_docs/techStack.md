@@ -1,5 +1,8 @@
 ## Backend
 - Language: Python
+- Machine Learning: PyTorch
+- Image Processing: OpenCV, PIL
+- Data Storage: LMDB
 
 ## DevOps
 - Containerization: Docker
@@ -15,3 +18,17 @@
   - `make test` - Run unit tests in the Docker container
   - `make clean` - Delete all images from output/prep directory
   - `make help` - Display help information
+
+## Image Processing Technologies
+- OpenCV for advanced image processing operations:
+  - Multiple thresholding methods (Otsu, adaptive, fixed)
+  - Morphological operations for stroke connectivity
+  - Gaussian blur for noise reduction
+- PIL (Python Imaging Library) for basic image operations
+- Custom algorithms for touch/stylus input optimization
+
+## Machine Learning Technologies
+- PyTorch for model development and training
+- CNN architecture for kanji recognition
+- Data augmentation for touch input simulation
+- Mixed precision training for performance optimization

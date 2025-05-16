@@ -4,22 +4,34 @@
 - [x] Improve image processing pipeline
 - [x] Implement unit tests with pytest
 - [x] Create PyTorch Dataset for loading LMDB data
-- [ ] Implement kanji recognition model
+- [x] Implement basic kanji recognition model
+- [ ] Optimize for touch/stylus input
+- [ ] Implement improved B&W conversion algorithm
+- [ ] Create touch input simulation for augmentation
+- [ ] Train models specifically for touch input
+- [ ] Develop deployment preprocessing pipeline
+- [ ] Build demo interface for touch input testing
 - [ ] Create a user interface for kanji recognition
 
 ## Key Features
 - ETL9G dataset processing for kanji images
-- Image preprocessing (cropping, padding)
+- Image preprocessing (cropping, padding, B&W conversion)
+- Touch/stylus input optimization
 - LMDB-based data storage with train/val/test splits
 - PyTorch Dataset implementation for efficient data loading
 - Docker-based development environment
 - Makefile for simplified operations
+- Binary image processing optimized for touch input
+- Real-time preprocessing for touch/stylus input
+- Touch input simulation for augmentation
 
 ## Completion Criteria
 - Modular, well-documented code
-- Accurate kanji recognition
+- Accurate kanji recognition with touch/stylus input
 - User-friendly interface
 - Comprehensive test coverage
+- Efficient real-time processing
+- Robust performance across different touch input styles
 
 ## Completed Tasks
 - [2025-05-12] Extracted `extract_item9g_image()` function from `extract_etl9g_images()` for better modularity
@@ -29,14 +41,7 @@
 - [2025-05-13] Added 'clean' command to Makefile to delete all images from output/prep directory
 - [2025-05-13] Moved `crop_and_pad()` function from `parse.py` to `clean.py` for better code organization
 - [2025-05-13] Created `prepare.py` to implement the ETL pipeline for preparing the ETL9G dataset for ML training
-
-## Completed Tasks (continued)
 - [2025-05-13] Updated docker-compose.yml to mount the entire output/prep directory for better data persistence
-
-## In Progress
-- Implementing kanji recognition model
-
-## Completed Tasks (continued)
 - [2025-05-13] Modified prepare.py to process ETL9G files individually and save to separate pickle files
 - [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file
 - [2025-05-13] Added lmdb to requirements.txt and installed liblmdb-dev in Dockerfile for efficient key-value storage
@@ -55,3 +60,18 @@
 - [2025-05-15] Added performance optimizations for efficient data loading (caching, worker processes, pinned memory)
 - [2025-05-15] Implemented visualization utilities for dataset inspection
 - [2025-05-15] Created comprehensive unit tests for load.py module
+- [2025-05-16] Implemented basic kanji recognition model with CNN architecture
+- [2025-05-16] Created training pipeline with cross-entropy loss and Adam optimizer
+- [2025-05-16] Implemented evaluation metrics and model saving functionality
+
+## In Progress
+- Optimizing for touch/stylus input
+- Implementing improved B&W conversion algorithm
+- Updating documentation to reflect new focus on touch input
+
+## Next Priorities
+1. Implement the improved B&W conversion algorithm (`convert_to_bw_multi_approach()`)
+2. Create touch input simulation for data augmentation
+3. Train models specifically optimized for touch input
+4. Develop the deployment preprocessing pipeline for real-time touch input
+5. Build a simple demo interface for touch input testing

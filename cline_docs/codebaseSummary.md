@@ -9,6 +9,12 @@
 
 - **Data Loading and Model Training**: Components for loading data and training models
   - `load.py`: PyTorch Dataset implementation for loading kanji data from LMDB databases
+  - `train.py`: Model training pipeline with CNN architecture
+
+- **Touch/Stylus Input Optimization**: Components for optimizing the system for touch/stylus input
+  - `convert_to_bw_multi_approach()`: Enhanced B&W conversion algorithm optimized for touch input
+  - Touch input simulation for data augmentation (to be implemented)
+  - Deployment preprocessing pipeline for real-time touch input (to be implemented)
 
 - **Docker Environment**: Configuration for containerized development
   - `Dockerfile`: Defines the container image
@@ -23,7 +29,11 @@
    - The original image
    - A cropped/padded version of the image
    - The Unicode character
-4. `process_kanji_dict()` converts images to two-bit black and white
+4. `process_kanji_dict()` converts images to binary black and white using the multi-approach method:
+   - Multiple thresholding methods (Otsu, adaptive, and fixed)
+   - Selection based on appropriate stroke density for kanji
+   - Morphological operations to improve stroke connectivity
+   - Optimization for touch/stylus input characteristics
 5. `prepare.py` orchestrates the entire ETL process:
    - Processes one ETL9G file at a time
    - Stores processed images in an LMDB database with keys in the format `character_index_source`
@@ -37,6 +47,12 @@
    - 200 images per character (consistent across all characters)
    - Approximately 11.61 GB of data on disk
 
+7. For model training:
+   - Images are loaded from the LMDB database using the `KanjiLMDBDataset` class
+   - Data is augmented to simulate touch input variations
+   - Model is trained on binary images to match deployment conditions
+   - Evaluation metrics track performance on touch-like input
+
 ## Project Structure
 
 ```
@@ -45,6 +61,8 @@ kanji-recognition/
 ├── data/                   # Data directory
 │   └── ETL9G/              # ETL9G dataset files
 ├── docs/                   # Project documentation
+│   ├── data.md             # Dataset documentation
+│   └── outline.md          # Project outline and architecture
 ├── output/                 # Output directory
 │   └── prep/               # Prepared data for ML training
 │       └── etl9g_images/   # Processed images for viewing
@@ -57,7 +75,7 @@ kanji-recognition/
 │   ├── parse_etl9g.py      # ETL9G data extraction
 │   ├── prepare.py          # ETL pipeline for dataset preparation
 │   ├── requirements.txt    # Python dependencies
-│   └── train.py            # Model training (to be implemented)
+│   └── train.py            # Model training
 ├── tests/                  # Unit tests
 │   ├── conftest.py         # Shared pytest fixtures
 │   ├── test_clean.py       # Tests for clean.py
@@ -73,29 +91,31 @@ kanji-recognition/
 
 ## Recent Significant Changes
 
+- [2025-05-16] Updated project documentation to focus on touch/stylus input optimization
+- [2025-05-16] Documented the improved B&W conversion algorithm for touch input
+- [2025-05-16] Reprioritized roadmap to focus on touch input optimization
+- [2025-05-16] Implemented basic kanji recognition model with CNN architecture
+- [2025-05-16] Created training pipeline with cross-entropy loss and Adam optimizer
 - [2025-05-15] Created load.py module with PyTorch Dataset implementation for loading kanji data from LMDB databases
 - [2025-05-15] Implemented comprehensive unit tests for load.py module
 - [2025-05-15] Fixed bug in datasplit.py to handle different character count keys in metadata ('character_counts' vs 'character_counts_etl9g')
-- [2025-05-12] Extracted `extract_item9g_image()` function from `extract_etl9g_images()` for better modularity
-- [2025-05-12] Created Makefile with commands for Docker Compose operations
-- [2025-05-12] Implemented `read_records()` generator function to improve modularity of record reading logic
-- [2025-05-12] Modified image processing to standardize images to 128x128 dimensions
-- [2025-05-13] Added 'clean' command to Makefile to delete all images from output/prep directory
-- [2025-05-13] Moved `crop_and_pad()` function from `parse.py` to `clean.py` for better code organization
-- [2025-05-13] Created `prepare.py` to implement the ETL pipeline for preparing the ETL9G dataset for ML training
-- [2025-05-13] Updated docker-compose.yml to mount the entire output/prep directory for better data persistence
-- [2025-05-13] Modified parse.py to use the correct output directory path that matches the Docker volume mount
-- [2025-05-13] Modified prepare.py to process ETL9G files individually and save to separate pickle files
-- [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file
-- [2025-05-13] Added lmdb to requirements.txt and installed liblmdb-dev in Dockerfile for efficient key-value storage
+- [2025-05-15] Refactored datasplit.py to use LMDB databases for train, validation, and test splits with configurable ratios
 - [2025-05-14] Refactored prepare.py to use LMDB instead of pickle files for storing processed kanji data
 - [2025-05-14] Modified parse.py to no longer write PNG files to disk, improving efficiency by directly passing image data to prepare.py for LMDB storage
 - [2025-05-14] Created `lmdb_stats.py` script to read metadata from the LMDB database and provide comprehensive statistics about the kanji dataset
 - [2025-05-14] Renamed `parse.py` to `parse_etl9g.py` to better reflect its specific purpose in processing the ETL9G dataset
 - [2025-05-14] Added pytest and related packages to requirements.txt for unit testing
 - [2025-05-14] Created comprehensive unit tests for parse_etl9g.py, clean.py, and prepare.py modules
-- [2025-05-15] Refactored datasplit.py to use LMDB databases for train, validation, and test splits with configurable ratios
-- [2025-05-15] Implemented comprehensive unit tests for datasplit.py module
+- [2025-05-13] Modified prepare.py to process ETL9G files individually and save to separate pickle files
+- [2025-05-13] Added checkpoint mechanism to prepare.py to resume processing from the last file
+- [2025-05-13] Added lmdb to requirements.txt and installed liblmdb-dev in Dockerfile for efficient key-value storage
+- [2025-05-13] Created `prepare.py` to implement the ETL pipeline for preparing the ETL9G dataset for ML training
+- [2025-05-13] Moved `crop_and_pad()` function from `parse.py` to `clean.py` for better code organization
+- [2025-05-13] Added 'clean' command to Makefile to delete all images from output/prep directory
+- [2025-05-12] Modified image processing to standardize images to 128x128 dimensions
+- [2025-05-12] Implemented `read_records()` generator function to improve modularity of record reading logic
+- [2025-05-12] Created Makefile with commands for Docker Compose operations
+- [2025-05-12] Extracted `extract_item9g_image()` function from `extract_etl9g_images()` for better modularity
 
 ## Development Workflow
 
@@ -167,9 +187,22 @@ kanji-recognition/
    - `--visualize`: Visualize random samples from the datasets
    - `--num-samples N`: Number of samples to visualize (default: 9)
 
-9. Output files:
+9. To train the kanji recognition model:
+   ```
+   make run python train.py
+   ```
+   Optional arguments:
+   - `--data-dir DIR`: Directory containing the LMDB databases (default: /app/output/prep)
+   - `--batch-size N`: Batch size for DataLoader (default: 32)
+   - `--num-workers N`: Number of worker processes for DataLoader (default: 4)
+   - `--epochs N`: Number of training epochs (default: 10)
+   - `--learning-rate LR`: Learning rate for optimizer (default: 0.001)
+   - `--model-dir DIR`: Directory to save trained models (default: /app/output/models)
+
+10. Output files:
    - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory
    - Train split is saved to the `output/prep/kanji.train.lmdb` directory
    - Validation split is saved to the `output/prep/kanji.val.lmdb` directory
    - Test split is saved to the `output/prep/kanji.test.lmdb` directory
    - Character distribution visualization (if generated) is saved to `output/prep/char_distribution.png`
+   - Trained models are saved to the `output/models` directory

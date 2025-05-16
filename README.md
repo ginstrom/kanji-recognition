@@ -1,6 +1,18 @@
 # kanji-recognition
 
-ML model for recognizing handwritten kanji characters
+ML model for recognizing handwritten kanji characters, optimized for touch/stylus input
+
+## Touch/Stylus Input Optimization
+
+This project is specifically optimized for touch/stylus input, which is the primary use case for the kanji recognition system. Key optimizations include:
+
+1. **Enhanced B&W Conversion Algorithm**: Uses multiple thresholding methods (Otsu, adaptive, and fixed) to select the best approach based on appropriate stroke density for kanji. Applies morphological operations to improve stroke connectivity.
+
+2. **Touch Input Simulation**: Augmentation techniques that simulate realistic touch input variations (stroke thickness, jitter) to improve model generalization.
+
+3. **Binary Image Processing**: Focus on binary (black and white) image processing rather than grayscale preservation to match real-world touch input characteristics.
+
+4. **Real-time Preprocessing Pipeline**: Optimized for efficient processing of touch/stylus input in deployment scenarios.
 
 ## Data Processing Pipeline
 
@@ -32,6 +44,19 @@ This project includes a complete data processing pipeline for the ETL9G dataset:
    ```
    make run python datasplit.py --train-ratio 0.7 --val-ratio 0.15
    ```
+
+4. **Model Training**: Train the kanji recognition model
+   ```
+   make run python train.py
+   ```
+   
+   Optional arguments:
+   - `--data-dir DIR`: Directory containing the LMDB databases (default: /app/output/prep)
+   - `--batch-size N`: Batch size for DataLoader (default: 32)
+   - `--num-workers N`: Number of worker processes for DataLoader (default: 4)
+   - `--epochs N`: Number of training epochs (default: 10)
+   - `--learning-rate LR`: Learning rate for optimizer (default: 0.001)
+   - `--model-dir DIR`: Directory to save trained models (default: /app/output/models)
 
 ## Development Setup
 
