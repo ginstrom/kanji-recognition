@@ -1,8 +1,6 @@
 import struct
 import numpy as np
 from PIL import Image
-import os
-from pathlib import Path
 from glob import glob
 from jis_unicode_map import jis_to_unicode
 
@@ -126,13 +124,6 @@ def extract_images(file_paths, limit=20):
                     print(f"Error processing record {record_idx}: {e}")
                     record_idx += 1
                     continue
-
-def clean_output_dir(base_dir):
-    """
-    This function is kept for backward compatibility but no longer needed
-    since we're not writing files to disk anymore.
-    """
-    print("No longer writing images to disk, skipping directory cleaning.")
 
 def main():
     # Example usage (adjust path and limit as needed):
