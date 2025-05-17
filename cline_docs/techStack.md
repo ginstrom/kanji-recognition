@@ -3,6 +3,7 @@
 - Machine Learning: PyTorch
 - Image Processing: OpenCV, PIL
 - Data Storage: LMDB
+- Font Processing: fonttools, matplotlib.font_manager
 
 ## DevOps
 - Containerization: Docker
@@ -24,11 +25,22 @@
   - Multiple thresholding methods (Otsu, adaptive, fixed)
   - Morphological operations for stroke connectivity
   - Gaussian blur for noise reduction
-- PIL (Python Imaging Library) for basic image operations
+- PIL (Python Imaging Library) for basic image operations:
+  - Font rendering for synthetic kanji images
+  - Text positioning and drawing
+  - Image format conversion
 - Custom algorithms for touch/stylus input optimization
+- Font detection and rendering for synthetic data generation
 
 ## Machine Learning Technologies
 - PyTorch for model development and training
 - CNN architecture for kanji recognition
 - Data augmentation for touch input simulation
 - Mixed precision training for performance optimization
+- Synthetic data generation for improved model generalization
+
+## Data Generation
+- ETL9G dataset for handwritten kanji samples
+- Font-based kanji image generation for additional training data
+- System font detection and filtering for Japanese support
+- Multiple font styles (regular, bold) for style variation

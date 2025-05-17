@@ -34,6 +34,12 @@
 - Robust performance across different touch input styles
 
 ## Completed Tasks
+- [2025-05-17] Modified genkanji.py to generate images only for characters in the existing kanji.lmdb database
+- [2025-05-17] Modified genkanji.py to generate images for all Japanese kanji characters with improved progress reporting
+- [2025-05-17] Added command-line arguments to make font and character limits configurable
+- [2025-05-17] Created genkanji.py module to generate font-based kanji images for all hiragana and kanji characters
+- [2025-05-17] Implemented comprehensive unit tests for genkanji.py module
+- [2025-05-17] Added fonttools dependency for font detection and processing
 - [2025-05-12] Extracted `extract_item9g_image()` function from `extract_etl9g_images()` for better modularity
 - [2025-05-12] Created Makefile with commands for Docker Compose operations (run, shell, build, help)
 - [2025-05-12] Implemented `read_records()` generator function to improve modularity of record reading logic
@@ -65,13 +71,14 @@
 - [2025-05-16] Implemented evaluation metrics and model saving functionality
 
 ## In Progress
-- Optimizing for touch/stylus input
 - Implementing improved B&W conversion algorithm
-- Updating documentation to reflect new focus on touch input
+- Integrating font-generated data with the existing training pipeline
+- Creating touch input simulation for data augmentation
 
 ## Next Priorities
 1. Implement the improved B&W conversion algorithm (`convert_to_bw_multi_approach()`)
-2. Create touch input simulation for data augmentation
-3. Train models specifically optimized for touch input
-4. Develop the deployment preprocessing pipeline for real-time touch input
-5. Build a simple demo interface for touch input testing
+2. Integrate the font-generated data with the existing training pipeline
+3. Create touch input simulation for data augmentation
+4. Train models specifically optimized for touch input
+5. Develop the deployment preprocessing pipeline for real-time touch input
+6. Build a simple demo interface for touch input testing

@@ -28,7 +28,14 @@ This project includes a complete data processing pipeline for the ETL9G dataset:
    make run python prepare.py
    ```
 
-3. **Dataset Splitting**: Split the dataset into train, validation, and test sets
+3. **Font-based Generation**: Generate kanji images from system fonts
+   ```
+   make run python genkanji.py
+   ```
+   
+   This module generates 128x128 pixel images of hiragana and kanji characters using all Japanese-capable fonts on the system, in regular, bold, and italic styles. The generated images are processed using the same pipeline as the ETL9G data and stored in an LMDB database.
+
+4. **Dataset Splitting**: Split the dataset into train, validation, and test sets
    ```
    make run python datasplit.py
    ```

@@ -1,57 +1,23 @@
 ## Current Objective
-Update project documentation and roadmap to focus on touch/stylus input optimization
+Modify the `genkanji.py` script to always load from the kanji.lmdb database created by `src/prepare.py` and remove all other code to write all characters.
 
 ## Context
-We've identified several improvements for our handwritten kanji recognition system, particularly optimizing for touch/stylus input which will be the primary use case. The system needs to be refined to focus on black and white (binary) image processing rather than grayscale preservation, with specific enhancements to our B&W conversion algorithm.
+This task is part of refining the data generation pipeline for the kanji recognition system. The goal is to ensure that the font-generated images match exactly the characters that were extracted from the handwriting database, maintaining consistency in the training data.
 
-## Implementation Plan
-1. Revise the data processing pipeline documentation to explicitly mention optimization for touch/stylus input
-2. Update the B&W conversion algorithm section to include the recommended multi-approach method
-3. Add a new section on touch input preprocessing for deployment
-4. Revise the training approach to emphasize training with B&W images matching our expected inference conditions
-5. Reprioritize the roadmap to focus on these optimizations
-6. Create a section on testing with real touch/stylus input
+## Completed Steps
+1. Updated `genkanji.py` to:
+   - Always load characters from the kanji.lmdb database
+   - Fixed an issue with the LMDB environment being closed prematurely
+   - Modified the `get_characters_from_lmdb` function to properly handle the LMDB environment
+   - Added a `test_mode` parameter to the `main()` function to support testing
 
-## Implementation Details
-1. Updated B&W Conversion Algorithm:
-   - Document the new `convert_to_bw_multi_approach()` function which:
-     - Uses multiple thresholding methods (Otsu, adaptive, and fixed)
-     - Selects the best method based on appropriate stroke density for kanji
-     - Applies morphological operations to improve stroke connectivity
-     - Is optimized for touch/stylus input characteristics
+2. Updated the tests to work with the modified script:
+   - Fixed the `test_get_characters_from_lmdb` test to properly mock the JSON loading
+   - Updated the `test_main_no_fonts` and `test_main_with_fonts` tests to use the new `test_mode` parameter
 
-2. Training Approach Updates:
-   - Focus on training with B&W rather than grayscale to match deployment conditions
-   - Augmentation should simulate realistic touch input variations (stroke thickness, jitter)
-   - Preprocessing should standardize inputs to improve generalization
-
-3. Touch Input Processing for Deployment:
-   - Preprocessing pipeline for real-time input from touch/stylus
-   - Standardizing input size and stroke characteristics
-   - Real-time processing performance considerations
-
-4. Testing Strategy:
-   - Methods for evaluating model performance with realistic touch input
-   - Comparison metrics between different preprocessing approaches
-   - User experience testing considerations
-
-## Previous Objective (Completed)
-✅ Implement a simple kanji recognition model and training pipeline
-
-## Previous Implementation Completed
-1. ✅ Implemented a simple CNN model architecture in PyTorch with:
-   - Two convolutional layers with max pooling
-   - One fully connected layer for classification
-2. ✅ Created a basic training script with:
-   - Standard cross-entropy loss
-   - Adam optimizer with default parameters
-   - Simple training and validation loops
-3. ✅ Implemented basic evaluation metrics (accuracy)
-4. ✅ Added support for saving the final model
+3. Verified that all tests pass and the script works correctly with the LMDB database.
 
 ## Next Steps
-1. Implement the improved B&W conversion algorithm for touch/stylus input
-2. Create a touch input simulation for augmentation
-3. Train models specifically optimized for touch input
-4. Develop the deployment preprocessing pipeline
-5. Build a simple demo interface for real touch input testing
+1. Consider adding more error handling for edge cases
+2. Optimize the font generation process for better performance
+3. Add more documentation about the LMDB database format and usage

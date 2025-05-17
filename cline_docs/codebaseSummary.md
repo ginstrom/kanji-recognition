@@ -6,6 +6,15 @@
   - `datasplit.py`: Splits datasets into train, validation, and test sets
   - `prepare.py`: Prepares the ETL9G dataset for ML training (ETL pipeline)
   - `jis_unicode_map.py`: Maps JIS codes to Unicode characters
+  - `genkanji.py`: Generates font-based kanji images using system fonts
+    - Now exclusively loads characters from the kanji.lmdb database created by prepare.py
+    - Finds Japanese-capable fonts using fc-list
+    - Renders characters in regular and bold styles
+    - Processes images using the same pipeline as ETL9G data
+    - Stores results in an LMDB database similar to prepare.py
+    - Supports command-line arguments for configurable font limits
+    - Provides detailed progress reporting for long-running processing
+    - Includes test mode for unit testing
 
 - **Data Loading and Model Training**: Components for loading data and training models
   - `load.py`: PyTorch Dataset implementation for loading kanji data from LMDB databases
@@ -80,6 +89,7 @@ kanji-recognition/
 │   ├── conftest.py         # Shared pytest fixtures
 │   ├── test_clean.py       # Tests for clean.py
 │   ├── test_datasplit.py   # Tests for datasplit.py
+│   ├── test_genkanji.py    # Tests for genkanji.py
 │   ├── test_load.py        # Tests for load.py
 │   ├── test_parse_etl9g.py # Tests for parse_etl9g.py
 │   └── test_prepare.py     # Tests for prepare.py
@@ -91,6 +101,15 @@ kanji-recognition/
 
 ## Recent Significant Changes
 
+- [2025-05-17] Fixed LMDB environment handling in genkanji.py to properly close environments and avoid "closed/deleted/dropped object" errors
+- [2025-05-17] Added test_mode parameter to main() function in genkanji.py to support unit testing
+- [2025-05-17] Updated genkanji.py to exclusively load characters from kanji.lmdb database
+- [2025-05-17] Modified genkanji.py to generate images only for characters in the existing kanji.lmdb database
+- [2025-05-17] Modified genkanji.py to generate images for all Japanese kanji characters with improved progress reporting
+- [2025-05-17] Added command-line arguments to make font and character limits configurable
+- [2025-05-17] Added genkanji.py module to generate font-based kanji images for all hiragana and kanji characters
+- [2025-05-17] Implemented comprehensive unit tests for genkanji.py module
+- [2025-05-17] Added fonttools dependency for font detection and processing
 - [2025-05-16] Updated project documentation to focus on touch/stylus input optimization
 - [2025-05-16] Documented the improved B&W conversion algorithm for touch input
 - [2025-05-16] Reprioritized roadmap to focus on touch input optimization
@@ -199,8 +218,30 @@ kanji-recognition/
    - `--learning-rate LR`: Learning rate for optimizer (default: 0.001)
    - `--model-dir DIR`: Directory to save trained models (default: /app/output/models)
 
-10. Output files:
-   - LMDB database with processed data is saved to the `output/prep/kanji.lmdb` directory
+10. To generate font-based kanji images:
+   ```
+   make run python genkanji.py
+   ```
+   Optional arguments:
+   - `--output-dir DIR`: Directory to store output LMDB database (default: /app/output/prep)
+   - `--limit-fonts N`: Limit the number of font families to process (default: None)
+   - `--source-lmdb PATH`: Path to source LMDB database to get characters from (default: /app/output/prep/kanji.lmdb)
+   
+   Examples:
+   ```
+   # Process all characters from kanji.lmdb with 3 font families
+   make run python genkanji.py --limit-fonts 3
+   
+   # Process all characters from kanji.lmdb with all available fonts
+   make run python genkanji.py
+   
+   # Process characters from a different LMDB database
+   make run python genkanji.py --source-lmdb /path/to/other.lmdb
+   ```
+
+11. Output files:
+   - LMDB database with processed ETL9G data is saved to the `output/prep/kanji.lmdb` directory
+   - LMDB database with font-generated kanji images is saved to the `output/prep/kanji_fonts.lmdb` directory
    - Train split is saved to the `output/prep/kanji.train.lmdb` directory
    - Validation split is saved to the `output/prep/kanji.val.lmdb` directory
    - Test split is saved to the `output/prep/kanji.test.lmdb` directory
