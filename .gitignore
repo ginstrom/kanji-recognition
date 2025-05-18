@@ -13,6 +13,9 @@ src/etl9g_images/
 etl9g_images/
 output/
 
+# env variables
+.envrc 
+
 # Distribution / packaging
 .Python
 build/
