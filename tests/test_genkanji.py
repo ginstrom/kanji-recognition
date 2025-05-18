@@ -272,13 +272,26 @@ class TestGenKanji:
         
     @patch('src.genkanji.get_japanese_fonts')
     @patch('src.genkanji.generate_font_kanji_dataset')
-    def test_main_no_fonts(self, mock_generate, mock_get_fonts):
+    @patch('src.genkanji.get_characters_from_lmdb')
+    def test_main_no_fonts(self, mock_get_chars, mock_generate, mock_get_fonts):
         """Test the main function when no fonts are available."""
-        # Mock the get_japanese_fonts function
+        # Mock get_characters_from_lmdb to ensure main proceeds
+        mock_get_chars.return_value = ['一', '二']
+
+        # Mock get_japanese_fonts (called inside the real generate_font_kanji_dataset,
+        # but less critical here as generate_font_kanji_dataset itself is mocked)
         mock_get_fonts.return_value = {}
-        
+
+        # Configure the mock for generate_font_kanji_dataset to return what the
+        # real function would return if no fonts were found by its internal logic.
+        mock_generate.return_value = (None, 0)
+    
         # Call the main function in test mode
+        # It should handle env=None gracefully and return.
         main(test_mode=True)
-        
-        # Check that generate_font_kanji_dataset was not called
-        mock_generate.assert_not_called()
+
+        # Assert that generate_font_kanji_dataset was called
+        mock_generate.assert_called_once()
+        # We could also check sys.argv or mock argparse if specific args were needed for main
+        # For now, assume default args for main are sufficient for this test.
+        # We could also capture logger output to check for the expected error message.
