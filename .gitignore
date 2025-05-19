@@ -8,6 +8,10 @@ __pycache__/
 
 # download data
 data/ETL9G/
+data/ETL9B/
+data/ETL8B/
+data/ETL8G/
+
 # generated data
 src/etl9g_images/
 etl9g_images/
@@ -182,3 +186,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+data/.DS_Store
+.DS_Store

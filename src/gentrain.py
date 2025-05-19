@@ -24,6 +24,10 @@ def parse_args():
         '--train_db_path', type=str, default='/app/output/prep/kanji.train.lmdb',
         help='Path to the target training LMDB database to merge data into.'
     )
+    parser.add_argument(
+        '--map_size_gb', type=float, default=None,
+        help='Override map size for LMDB in GB (default: auto-estimate, min 10GB)'
+    )
     return parser.parse_args()
 
 def _read_lmdb_metadata_and_info(db_path, db_name_for_logging="DB"):
@@ -67,7 +71,7 @@ def _read_lmdb_metadata_and_info(db_path, db_name_for_logging="DB"):
     return metadata, db_info, num_samples, map_size, map_used
 
 def _calculate_target_map_size(current_train_map_size, current_train_map_used, 
-                               current_train_num_samples, estimated_font_records_to_add):
+                               current_train_num_samples, estimated_font_records_to_add, override_map_size_gb=None):
     """Estimates the new map_size for the training LMDB."""
     avg_item_size_train = 20 * 1024  # Default 20KB per item
     if current_train_num_samples > 0 and current_train_map_used > 0:
@@ -75,9 +79,13 @@ def _calculate_target_map_size(current_train_map_size, current_train_map_used,
     
     estimated_additional_size_needed = estimated_font_records_to_add * avg_item_size_train
     
-    target_map_size = int(current_train_map_used + estimated_additional_size_needed * 1.5) # 50% buffer
+    # Use a much larger buffer (10x), and a minimum of 10GB
+    target_map_size = int(current_train_map_used + estimated_additional_size_needed * 10.0) # 900% buffer
     target_map_size = max(target_map_size, current_train_map_size) # At least current
-    target_map_size = max(target_map_size, 100 * 1024 * 1024)     # Min 100MB
+    target_map_size = max(target_map_size, 10 * 1024 * 1024 * 1024)     # Min 10GB
+    if override_map_size_gb is not None:
+        target_map_size = int(override_map_size_gb * 1024 * 1024 * 1024)
+        logger.info(f"Overriding map_size: {override_map_size_gb} GB ({target_map_size/(1024*1024):.2f} MB)")
     
     logger.info(f"Original train_db map_size: {current_train_map_size / (1024*1024):.2f} MB, Used: {current_train_map_used / (1024*1024):.2f} MB")
     logger.info(f"Estimated font records to add: {estimated_font_records_to_add}")
@@ -146,7 +154,7 @@ def _update_train_db_metadata(train_env, train_meta_original, num_font_samples_a
     return updated_meta
 
 
-def merge_font_data_to_train(font_db_path, train_db_path):
+def merge_font_data_to_train(font_db_path, train_db_path, map_size_gb=None):
     """
     Merges data from font_db into train_db and updates metadata.
     Orchestrates calls to helper functions.
@@ -201,7 +209,7 @@ def merge_font_data_to_train(font_db_path, train_db_path):
         
         target_map_size = _calculate_target_map_size(
             current_train_map_size, current_train_map_used, 
-            current_train_num_samples, estimated_font_records_to_add
+            current_train_num_samples, estimated_font_records_to_add, map_size_gb
         )
         target_map_size_for_error_msg = target_map_size
 
@@ -247,9 +255,9 @@ def main():
     logger.info(f"Starting merge process:")
     logger.info(f"  Font DB (source): {args.font_db_path}")
     logger.info(f"  Train DB (target): {args.train_db_path}")
-    
-    merge_font_data_to_train(args.font_db_path, args.train_db_path)
-    
+    if args.map_size_gb:
+        logger.info(f"  User override: map_size = {args.map_size_gb} GB")
+    merge_font_data_to_train(args.font_db_path, args.train_db_path, map_size_gb=args.map_size_gb)
     logger.info("Merge process finished.")
 
 if __name__ == "__main__":
