@@ -1,6 +1,6 @@
 import unittest
-from unittest.mock import patch, MagicMock, mock_open, call
-import os
+from unittest.mock import patch, MagicMock, call # mock_open, os unused F401
+# import os # Unused F401
 import lmdb
 import json
 import pickle
@@ -8,7 +8,7 @@ from collections import defaultdict
 
 # Use specific imports similar to test_genkanji.py
 from src.gentrain import (
-    parse_args,
+    # parse_args, # Unused F401
     _read_lmdb_metadata_and_info,
     _calculate_target_map_size,
     _transfer_data_and_update_stats,

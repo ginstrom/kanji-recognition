@@ -7,7 +7,7 @@ and provides functionality for training and evaluating the model on the ETL9G da
 import os
 import time
 import logging
-from typing import Tuple, Dict, Optional
+# from typing import Tuple, Dict, Optional # Unused F401
 
 import torch
 import torch.nn as nn

@@ -3,7 +3,7 @@ Unit tests for the prepare.py module.
 """
 import os
 import json
-import pytest
+# import pytest # Unused F401
 import numpy as np
 from PIL import Image
 from unittest.mock import patch, MagicMock, mock_open

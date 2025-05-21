@@ -123,7 +123,7 @@ def assign_splits(char_to_keys, train_ratio, val_ratio, random_seed=42):
     test_keys = []
     
     # Calculate test ratio
-    test_ratio = 1.0 - train_ratio - val_ratio
+    # test_ratio = 1.0 - train_ratio - val_ratio # Unused variable (F841)
     
     # Track statistics for each split
     split_stats = {

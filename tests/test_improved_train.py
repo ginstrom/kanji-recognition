@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import os
 import sys # For manipulating sys.modules
-import json
+# import json # Unused F401
 import logging
 
 # Attempt to import from src.improved_train

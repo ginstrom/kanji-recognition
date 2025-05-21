@@ -2,7 +2,7 @@
 Unit tests for the parse_etl9g.py module.
 """
 import io
-import pytest
+# import pytest # Unused F401
 import numpy as np
 from PIL import Image
 from unittest.mock import patch, MagicMock
@@ -12,7 +12,7 @@ from src.parse_etl9g import (
     extract_image,
     jis2unicode,
     extract_images,
-    ETL9G_RECORD_SIZE
+    # ETL9G_RECORD_SIZE # Unused F401
 )
 
 class TestReadRecords:
