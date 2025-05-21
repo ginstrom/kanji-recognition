@@ -1,11 +1,11 @@
 """
 Unit tests for the load.py module.
 """
-import os
+# import os # Unused F401
 import json
 import pickle
 import pytest
-import numpy as np
+# import numpy as np # Unused F401
 import torch
 from unittest.mock import patch, MagicMock
 from PIL import Image

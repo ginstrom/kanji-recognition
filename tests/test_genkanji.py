@@ -3,9 +3,9 @@ Tests for the genkanji.py module.
 """
 import os
 import pytest
-import numpy as np
+# import numpy as np # Unused F401
 from PIL import Image
-import lmdb
+# import lmdb # Unused F401
 import json
 from unittest.mock import patch, MagicMock
 
@@ -262,7 +262,7 @@ class TestGenKanji:
         mock_generate.return_value = (mock_env, 10)
         
         # Call the main function in test mode
-        main(test_mode=True)
+        main(test_mode=True, argv=[])
         
         # Check that generate_font_kanji_dataset was called
         mock_generate.assert_called_once()
@@ -288,7 +288,7 @@ class TestGenKanji:
     
         # Call the main function in test mode
         # It should handle env=None gracefully and return.
-        main(test_mode=True)
+        main(test_mode=True, argv=[])
 
         # Assert that generate_font_kanji_dataset was called
         mock_generate.assert_called_once()

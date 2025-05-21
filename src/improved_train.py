@@ -11,7 +11,7 @@ import time
 import json
 import logging
 import argparse
-from typing import Tuple, Dict, Optional, Any, List
+from typing import Dict, Optional, Any, List # Tuple unused F401
 
 import torch
 import torch.nn as nn
@@ -20,7 +20,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torch.cuda.amp import GradScaler, autocast
-import numpy as np
+# import numpy as np # Unused F401
 
 # Import functions from load.py
 from load import get_dataloaders, get_num_classes
@@ -39,7 +39,7 @@ def set_seed(seed_value: int = 42) -> None:
         # but is good for reproducibility.
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
-    np_random_seed = seed_value # for numpy if used by other parts like augmentations
+    # np_random_seed = seed_value # Unused variable (F841) - for numpy if used by other parts like augmentations
     # import numpy as np; np.random.seed(np_random_seed) # If numpy is used directly for randomness
     logger.info(f"Random seed set to {seed_value}")
 
@@ -343,7 +343,7 @@ def train_model_improved(
     )
     
     # For early stopping
-    best_val_loss = float('inf')
+    # best_val_loss = float('inf') # Unused variable (F841)
     best_val_acc = 0.0
     patience = 5
     patience_counter = 0
@@ -466,7 +466,7 @@ def train_model_improved(
         # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            best_val_loss = val_loss
+            # best_val_loss = val_loss # Unused variable (F841) - This was assigned but not used for decisions
             
             checkpoint_data = {
                 'epoch': epoch + 1,

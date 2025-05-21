@@ -76,7 +76,12 @@ def convert_to_bw(img_array):
     # Calculate white pixel ratios
     ratio_otsu = calculate_pixel_ratio(binary_otsu)
     ratio_adaptive = calculate_pixel_ratio(binary_adaptive)
-    ratio_fixed = calculate_pixel_ratio(binary_fixed)
+    # Removed ratio_fixed calculation here as it's unused (F841 fix)
+
+    # Perform morphological closing on binary_fixed
+    kernel = np.ones((2, 2), np.uint8)
+    binary_fixed_morphed = cv2.morphologyEx(binary_fixed, cv2.MORPH_CLOSE, kernel)
+    ratio_fixed_morphed = calculate_pixel_ratio(binary_fixed_morphed)
     
     # Choose method based on reasonable pixel density for a kanji character
     # These thresholds can be adjusted based on your specific dataset
@@ -84,11 +89,11 @@ def convert_to_bw(img_array):
         return binary_otsu
     elif 0.1 <= ratio_adaptive <= 0.4:
         return binary_adaptive
+    elif 0.1 <= ratio_fixed_morphed <= 0.4:
+        return binary_fixed_morphed
     else:
-        # Apply morphological operations to improve the fixed threshold result
-        kernel = np.ones((2, 2), np.uint8)
-        binary_fixed = cv2.morphologyEx(binary_fixed, cv2.MORPH_CLOSE, kernel)
-        return binary_fixed
+        # Fallback: return binary_otsu if no method yields an ideal ratio
+        return binary_otsu
 
 def process_kanji_dict(kanji_dict):
     """

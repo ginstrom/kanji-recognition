@@ -3,9 +3,9 @@ Unit tests for the datasplit.py module.
 """
 import os
 import json
-import pickle
+# import pickle # Unused F401
 import pytest
-import numpy as np
+# import numpy as np # Unused F401
 from unittest.mock import patch, MagicMock, mock_open, call
 from collections import defaultdict
 

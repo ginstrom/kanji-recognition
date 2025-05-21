@@ -5,7 +5,7 @@ This script processes the ETL9G dataset, extracts kanji characters and their cor
 import os
 import json
 import lmdb
-import numpy as np
+# import numpy as np # Unused F401
 from glob import glob
 from collections import defaultdict
 from PIL import Image
@@ -82,7 +82,7 @@ def process_etl9g_files(file_paths, env, index, limit=None):
         # Process each item in its own transaction to avoid MDB_BAD_TXN errors
         with env.begin(write=True) as txn:
             try:
-                key = process_and_store_kanji(item_data, txn, index)
+                process_and_store_kanji(item_data, txn, index) # Removed unused 'key' assignment
                 processed_count += 1
                 
                 # Print progress every 100 items

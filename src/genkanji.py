@@ -12,14 +12,14 @@ import json
 import lmdb
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-import matplotlib.font_manager as fm
+# import matplotlib.font_manager as fm # Unused F401
 from collections import defaultdict
 from tqdm import tqdm
-import unicodedata
+# import unicodedata # Unused F401
 import logging
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Optional, Any # Tuple unused F401
 import gc # Added for garbage collection
-import traceback # Added for detailed error logging
+# import traceback # Unused F401
 import psutil # Added for memory monitoring
 import time # Already imported, but ensure it is used for new timing/checkpoint
 from datetime import timedelta # Already imported, ensure used for new timing
@@ -586,12 +586,13 @@ def generate_font_kanji_dataset(output_dir: str,
     return env, total_processed_overall
 
 
-def main(test_mode=False):
+def main(test_mode=False, argv=None):
     """
     Main entry point for the script.
     
     Args:
         test_mode: If True, don't exit on errors (for testing purposes)
+        argv: Optional list of arguments to parse (for testing)
     """
     import argparse
     
@@ -612,7 +613,7 @@ def main(test_mode=False):
     parser.add_argument('--memory-warning-threshold', type=float, default=80.0,
                         help='Memory usage percentage (0-100) to trigger a warning (default: 80.0)')
     
-    args = parser.parse_args()
+    args = parser.parse_args(argv) # Pass argv here
 
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)

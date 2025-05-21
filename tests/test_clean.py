@@ -1,10 +1,9 @@
 """
 Unit tests for the clean.py module.
 """
-import pytest
 import numpy as np
 from PIL import Image
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch # MagicMock and pytest were unused
 
 from src.clean import (
     crop_and_pad,
@@ -27,8 +26,8 @@ class TestCropAndPad:
         # For a 128x128 image, we crop to 70% width (89.6 pixels)
         # So the central ~90 columns should be preserved
         center_x = mock_image_array.shape[1] // 2
-        crop_width = int(mock_image_array.shape[1] * 0.7)
-        left_margin = (mock_image_array.shape[1] - crop_width) // 2
+        # crop_width = int(mock_image_array.shape[1] * 0.7) # Not directly used in assertions
+        # left_margin = (mock_image_array.shape[1] - crop_width) // 2 # Unused variable (F841)
         
         # Check that the central portion is preserved
         # Compare a sample point in the center that should be preserved
