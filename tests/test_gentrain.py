@@ -80,29 +80,57 @@ class TestGentrainHelpers(unittest.TestCase):
         self.assertEqual(map_used, 0)
 
     def test_calculate_target_map_size(self):
-        # Scenario 1: Basic calculation
-        size = _calculate_target_map_size(1000, 500, 10, 20)
-        expected_avg_item_size = 500 / 10
-        expected_additional = 20 * expected_avg_item_size
-        expected_target = int(500 + expected_additional * 1.5)
-        expected_target = max(expected_target, 1000, 100 * 1024 * 1024)
-        self.assertEqual(size, expected_target)
+        min_map_size_constant = 10 * 1024 * 1024 * 1024  # 10GB
 
-        # Scenario 2: Empty train DB
-        size_empty_train = _calculate_target_map_size(1024*1024*100, 0, 0, 100)
-        default_item_size = 20 * 1024
-        expected_additional_empty = 100 * default_item_size
-        expected_target_empty = int(0 + expected_additional_empty * 1.5)
-        expected_target_empty = max(expected_target_empty, 1024*1024*100, 100 * 1024 * 1024)
-        self.assertEqual(size_empty_train, expected_target_empty)
+        # Scenario 1 (Basic):
+        current_map_size_s1 = 1000
+        current_data_size_s1 = 500
+        num_current_items_s1 = 10
+        num_new_items_s1 = 20
+        # Note: The function _calculate_target_map_size takes an optional 5th arg 'override_map_size_gb'
+        # which is not passed in these test scenarios, so it defaults to None in the function.
+        size_s1 = _calculate_target_map_size(current_map_size_s1, current_data_size_s1, num_current_items_s1, num_new_items_s1)
+        avg_item_size_s1 = current_data_size_s1 / num_current_items_s1 if num_current_items_s1 > 0 else (20 * 1024)
+        additional_data_needed_s1 = num_new_items_s1 * avg_item_size_s1
+        calculated_target_map_size_s1 = int(current_data_size_s1 + additional_data_needed_s1 * 10.0)
+        expected_s1 = max(max(calculated_target_map_size_s1, current_map_size_s1), min_map_size_constant)
+        self.assertEqual(size_s1, expected_s1)
+
+        # Scenario 2 (Empty train DB):
+        current_map_size_s2 = 1024*1024*100 # 100MB
+        current_data_size_s2 = 0
+        num_current_items_s2 = 0
+        num_new_items_s2 = 100
+        size_s2 = _calculate_target_map_size(current_map_size_s2, current_data_size_s2, num_current_items_s2, num_new_items_s2)
+        avg_item_size_s2 = 20 * 1024 # default_item_size from src
+        additional_data_needed_s2 = num_new_items_s2 * avg_item_size_s2
+        calculated_target_map_size_s2 = int(current_data_size_s2 + additional_data_needed_s2 * 10.0)
+        expected_s2 = max(max(calculated_target_map_size_s2, current_map_size_s2), min_map_size_constant)
+        self.assertEqual(size_s2, expected_s2)
         
-        # Scenario 3: Calculated size less than current map_size
-        size_less_than_current = _calculate_target_map_size(200*1024*1024, 50*1024*1024, 1000, 10)
-        self.assertEqual(size_less_than_current, 200*1024*1024) # Should stick to current map_size
+        # Scenario 3 (Calculated size less than current map_size):
+        current_map_size_s3 = 200*1024*1024 # 200MB
+        current_data_size_s3 = 50*1024*1024 # 50MB
+        num_current_items_s3 = 1000
+        num_new_items_s3 = 10
+        size_s3 = _calculate_target_map_size(current_map_size_s3, current_data_size_s3, num_current_items_s3, num_new_items_s3)
+        avg_item_size_s3 = current_data_size_s3 / num_current_items_s3 if num_current_items_s3 > 0 else (20 * 1024)
+        additional_data_needed_s3 = num_new_items_s3 * avg_item_size_s3
+        calculated_target_map_size_s3 = int(current_data_size_s3 + additional_data_needed_s3 * 10.0)
+        expected_s3 = max(max(calculated_target_map_size_s3, current_map_size_s3), min_map_size_constant)
+        self.assertEqual(size_s3, expected_s3)
 
-        # Scenario 4: Calculated size less than min_map_size (100MB)
-        size_less_than_min = _calculate_target_map_size(10*1024*1024, 5*1024*1024, 100, 1)
-        self.assertEqual(size_less_than_min, 100*1024*1024)
+        # Scenario 4 (Calculated size less than min_map_size (10GB), current also less):
+        current_map_size_s4 = 10*1024*1024 # 10MB
+        current_data_size_s4 = 5*1024*1024  # 5MB
+        num_current_items_s4 = 100
+        num_new_items_s4 = 1
+        size_s4 = _calculate_target_map_size(current_map_size_s4, current_data_size_s4, num_current_items_s4, num_new_items_s4)
+        avg_item_size_s4 = current_data_size_s4 / num_current_items_s4 if num_current_items_s4 > 0 else (20*1024)
+        additional_data_needed_s4 = num_new_items_s4 * avg_item_size_s4
+        calculated_target_map_size_s4 = int(current_data_size_s4 + additional_data_needed_s4 * 10.0)
+        expected_s4 = max(max(calculated_target_map_size_s4, current_map_size_s4), min_map_size_constant)
+        self.assertEqual(size_s4, expected_s4)
 
     def test_transfer_data_and_update_stats(self):
         mock_font_data = {
@@ -204,7 +232,7 @@ class TestGentrainMainFunction(unittest.TestCase):
         mock_read_meta.assert_any_call("font.lmdb", "FontDB")
         mock_read_meta.assert_any_call("train.lmdb", "TrainDB")
         
-        mock_calc_map_size.assert_called_once_with(20*1024*1024, 10*1024*1024, 50, 100)
+        mock_calc_map_size.assert_called_once_with(20*1024*1024, 10*1024*1024, 50, 100, None)
         
         expected_lmdb_calls = [
             call("font.lmdb", readonly=True, lock=False, readahead=False, meminit=False),
